@@ -3,6 +3,7 @@ import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
 import { Toaster } from '@/components/ui/toaster';
 import { AuthProvider } from './components/AuthProvider';
+import { ThemeProvider } from './components/ThemeProvider';
 import Header from './components/Header';
 import Footer from './components/Footer';
 import HomePage from './pages/HomePage';
@@ -29,6 +30,8 @@ import AboutPage from './pages/AboutPage';
 import TemplatesPage from './pages/TemplatesPage';
 import MonitoringPage from './pages/MonitoringPage';
 import UnauthorizedPage from './pages/UnauthorizedPage';
+import { AnimatedBackground } from './components/AnimatedBackground';
+import { PageTransition } from './components/PageTransition';
 
 const queryClient = new QueryClient({
   defaultOptions: {
@@ -42,82 +45,85 @@ const queryClient = new QueryClient({
 function AppInner() {
   return (
     <Router>
-      <div className="min-h-screen bg-gray-900 flex flex-col">
+      <div className="min-h-screen bg-gradient-to-br from-slate-900 via-purple-900 to-slate-900 flex flex-col relative overflow-hidden">
+        <AnimatedBackground />
         <Header />
-        <main className="flex-1">
-          <Routes>
-            <Route path="/" element={<HomePage />} />
-            <Route path="/login" element={<LoginPage />} />
-            <Route path="/register" element={<RegisterPage />} />
-            <Route path="/solutions" element={<SolutionsPage />} />
-            <Route path="/marketplace" element={<MarketplacePage />} />
-            <Route path="/marketplace/:id" element={<MarketplaceAgentPage />} />
-            <Route path="/marketplace/compare" element={<MarketplaceComparePage />} />
-            <Route path="/platform" element={<PlatformPage />} />
-            <Route path="/resources" element={<ResourcesPage />} />
-            <Route path="/about" element={<AboutPage />} />
-            <Route path="/dashboard" element={
-              <ProtectedRoute>
-                <DashboardPage />
-              </ProtectedRoute>
-            } />
-            <Route path="/agents" element={
-              <ProtectedRoute>
-                <AgentsPage />
-              </ProtectedRoute>
-            } />
-            <Route path="/templates" element={
-              <ProtectedRoute>
-                <TemplatesPage />
-              </ProtectedRoute>
-            } />
-            <Route path="/tasks" element={
-              <ProtectedRoute>
-                <TasksPage />
-              </ProtectedRoute>
-            } />
-            <Route path="/workflows" element={
-              <ProtectedRoute>
-                <WorkflowsPage />
-              </ProtectedRoute>
-            } />
-            <Route path="/collaborations" element={
-              <ProtectedRoute>
-                <CollaborationsPage />
-              </ProtectedRoute>
-            } />
-            <Route path="/training" element={
-              <ProtectedRoute>
-                <TrainingPage />
-              </ProtectedRoute>
-            } />
-            <Route path="/integrations" element={
-              <ProtectedRoute>
-                <IntegrationsPage />
-              </ProtectedRoute>
-            } />
-            <Route path="/deployments" element={
-              <ProtectedRoute>
-                <DeploymentPage />
-              </ProtectedRoute>
-            } />
-            <Route path="/profile" element={
-              <ProtectedRoute>
-                <ProfilePage />
-              </ProtectedRoute>
-            } />
-            <Route path="/subscription" element={
-              <ProtectedRoute>
-                <SubscriptionPage />
-              </ProtectedRoute>
-            } />
-            <Route path="/monitoring" element={
-              <ProtectedRoute requiredRole="super_admin">
-                <MonitoringPage />
-              </ProtectedRoute>
-            } />
-            <Route path="/unauthorized" element={<UnauthorizedPage />} />
-          </Routes>
+        <main className="flex-1 relative z-10">
+          <PageTransition>
+            <Routes>
+              <Route path="/" element={<HomePage />} />
+              <Route path="/login" element={<LoginPage />} />
+              <Route path="/register" element={<RegisterPage />} />
+              <Route path="/solutions" element={<SolutionsPage />} />
+              <Route path="/marketplace" element={<MarketplacePage />} />
+              <Route path="/marketplace/:id" element={<MarketplaceAgentPage />} />
+              <Route path="/marketplace/compare" element={<MarketplaceComparePage />} />
+              <Route path="/platform" element={<PlatformPage />} />
+              <Route path="/resources" element={<ResourcesPage />} />
+              <Route path="/about" element={<AboutPage />} />
+              <Route path="/dashboard" element={
+                <ProtectedRoute>
+                  <DashboardPage />
+                </ProtectedRoute>
+              } />
+              <Route path="/agents" element={
+                <ProtectedRoute>
+                  <AgentsPage />
+                </ProtectedRoute>
+              } />
+              <Route path="/templates" element={
+                <ProtectedRoute>
+                  <TemplatesPage />
+                </ProtectedRoute>
+              } />
+              <Route path="/tasks" element={
+                <ProtectedRoute>
+                  <TasksPage />
+                </ProtectedRoute>
+              } />
+              <Route path="/workflows" element={
+                <ProtectedRoute>
+                  <WorkflowsPage />
+                </ProtectedRoute>
+              } />
+              <Route path="/collaborations" element={
+                <ProtectedRoute>
+                  <CollaborationsPage />
+                </ProtectedRoute>
+              } />
+              <Route path="/training" element={
+                <ProtectedRoute>
+                  <TrainingPage />
+                </ProtectedRoute>
+              } />
+              <Route path="/integrations" element={
+                <ProtectedRoute>
+                  <IntegrationsPage />
+                </ProtectedRoute>
+              } />
+              <Route path="/deployments" element={
+                <ProtectedRoute>
+                  <DeploymentPage />
+                </ProtectedRoute>
+              } />
+              <Route path="/profile" element={
+                <ProtectedRoute>
+                  <ProfilePage />
+                </ProtectedRoute>
+              } />
+              <Route path="/subscription" element={
+                <ProtectedRoute>
+                  <SubscriptionPage />
+                </ProtectedRoute>
+              } />
+              <Route path="/monitoring" element={
+                <ProtectedRoute requiredRole="super_admin">
+                  <MonitoringPage />
+                </ProtectedRoute>
+              } />
+              <Route path="/unauthorized" element={<UnauthorizedPage />} />
+            </Routes>
+          </PageTransition>
         </main>
         <Footer />
         <Toaster />
@@ -129,9 +135,11 @@ function AppInner() {
 export default function App() {
   return (
     <QueryClientProvider client={queryClient}>
-      <AuthProvider>
-        <AppInner />
-      </AuthProvider>
+      <ThemeProvider>
+        <AuthProvider>
+          <AppInner />
+        </AuthProvider>
+      </ThemeProvider>
     </QueryClientProvider>
   );
 }
