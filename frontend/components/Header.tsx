@@ -69,12 +69,12 @@ export default function Header() {
               <UserMenu />
             ) : (
               <>
-                <Link to="/login">
-                  <Button variant="ghost">Sign In</Button>
-                </Link>
-                <Link to="/register">
-                  <Button>Get Started</Button>
-                </Link>
+                <Button variant="ghost" asChild>
+                  <Link to="/login">Sign In</Link>
+                </Button>
+                <Button asChild>
+                  <Link to="/register">Get Started</Link>
+                </Button>
               </>
             )}
           </div>

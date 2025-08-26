@@ -94,9 +94,11 @@ export default function HomePage() {
               Automate complex workflows, reduce operational costs, and scale your business with AI agents that learn and improve continuously.
             </p>
             <div className="flex flex-col sm:flex-row gap-4 justify-center">
-              <Button size="lg" className="bg-white text-blue-900 hover:bg-gray-100">
-                Get Started Free
-                <ArrowRight className="ml-2 h-5 w-5" />
+              <Button size="lg" className="bg-white text-blue-900 hover:bg-gray-100" asChild>
+                <Link to="/register">
+                  Get Started Free
+                  <ArrowRight className="ml-2 h-5 w-5" />
+                </Link>
               </Button>
               <Button size="lg" variant="outline" className="border-white text-white hover:bg-white hover:text-blue-900">
                 Watch Demo
@@ -204,8 +206,10 @@ export default function HomePage() {
             Join thousands of businesses already using Xtreous to automate their workflows and boost productivity.
           </p>
           <div className="flex flex-col sm:flex-row gap-4 justify-center">
-            <Button size="lg" className="bg-white text-blue-600 hover:bg-gray-100">
-              Start Free Trial
+            <Button size="lg" className="bg-white text-blue-600 hover:bg-gray-100" asChild>
+              <Link to="/register">
+                Start Free Trial
+              </Link>
             </Button>
             <Button size="lg" variant="outline" className="border-white text-white hover:bg-white hover:text-blue-600">
               Contact Sales
