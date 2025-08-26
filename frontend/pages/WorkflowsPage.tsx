@@ -5,16 +5,19 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/com
 import { Badge } from '@/components/ui/badge';
 import { Input } from '@/components/ui/input';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
-import { Workflow, Plus, Search, Play, Pause, Settings } from 'lucide-react';
+import { Workflow, Plus, Search, Play, Pause, Settings, Edit, Eye } from 'lucide-react';
 import backend from '~backend/client';
 import type { Workflow as WorkflowType } from '~backend/core/types';
 import CreateWorkflowDialog from '../components/CreateWorkflowDialog';
+import WorkflowBuilderDialog from '../components/WorkflowBuilderDialog';
 
 export default function WorkflowsPage() {
   const [searchTerm, setSearchTerm] = useState('');
   const [industryFilter, setIndustryFilter] = useState('');
   const [statusFilter, setStatusFilter] = useState('');
   const [isCreateDialogOpen, setIsCreateDialogOpen] = useState(false);
+  const [isBuilderDialogOpen, setIsBuilderDialogOpen] = useState(false);
+  const [selectedWorkflow, setSelectedWorkflow] = useState<WorkflowType | null>(null);
 
   const { data: workflowsData, isLoading, refetch } = useQuery({
     queryKey: ['workflows', industryFilter, statusFilter],
@@ -47,6 +50,16 @@ export default function WorkflowsPage() {
     }
   };
 
+  const handleEditWorkflow = (workflow: WorkflowType) => {
+    setSelectedWorkflow(workflow);
+    setIsBuilderDialogOpen(true);
+  };
+
+  const handleCreateWorkflow = () => {
+    setSelectedWorkflow(null);
+    setIsBuilderDialogOpen(true);
+  };
+
   return (
     <div className="min-h-screen bg-gray-50 py-8">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
@@ -59,10 +72,16 @@ export default function WorkflowsPage() {
                 Design and manage automated business processes
               </p>
             </div>
-            <Button onClick={() => setIsCreateDialogOpen(true)}>
-              <Plus className="h-4 w-4 mr-2" />
-              Create Workflow
-            </Button>
+            <div className="flex gap-2">
+              <Button variant="outline" onClick={() => setIsCreateDialogOpen(true)}>
+                <Plus className="h-4 w-4 mr-2" />
+                Quick Create
+              </Button>
+              <Button onClick={handleCreateWorkflow}>
+                <Settings className="h-4 w-4 mr-2" />
+                Visual Builder
+              </Button>
+            </div>
           </div>
         </div>
 
@@ -168,7 +187,12 @@ export default function WorkflowsPage() {
                     </div>
                     
                     <div className="mt-4 pt-4 border-t flex gap-2">
-                      <Button variant="outline" className="flex-1">
+                      <Button 
+                        variant="outline" 
+                        className="flex-1"
+                        onClick={() => handleEditWorkflow(workflow)}
+                      >
+                        <Edit className="h-4 w-4 mr-1" />
                         Edit
                       </Button>
                       <Button className="flex-1">
@@ -192,10 +216,16 @@ export default function WorkflowsPage() {
                 ? 'Try adjusting your filters to see more results.'
                 : 'Get started by creating your first workflow.'}
             </p>
-            <Button onClick={() => setIsCreateDialogOpen(true)}>
-              <Plus className="h-4 w-4 mr-2" />
-              Create Your First Workflow
-            </Button>
+            <div className="flex gap-2 justify-center">
+              <Button variant="outline" onClick={() => setIsCreateDialogOpen(true)}>
+                <Plus className="h-4 w-4 mr-2" />
+                Quick Create
+              </Button>
+              <Button onClick={handleCreateWorkflow}>
+                <Settings className="h-4 w-4 mr-2" />
+                Visual Builder
+              </Button>
+            </div>
           </div>
         )}
       </div>
@@ -206,6 +236,16 @@ export default function WorkflowsPage() {
         onSuccess={() => {
           refetch();
           setIsCreateDialogOpen(false);
+        }}
+      />
+
+      <WorkflowBuilderDialog
+        open={isBuilderDialogOpen}
+        onOpenChange={setIsBuilderDialogOpen}
+        workflow={selectedWorkflow}
+        onSuccess={() => {
+          refetch();
+          setIsBuilderDialogOpen(false);
         }}
       />
     </div>
