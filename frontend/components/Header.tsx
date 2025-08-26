@@ -20,6 +20,8 @@ export default function Header() {
     { name: 'Workflows', href: '/workflows', protected: true },
     { name: 'Training', href: '/training', protected: true },
     { name: 'Integrations', href: '/integrations', protected: true },
+    { name: 'Marketplace', href: '/marketplace' },
+    { name: 'Deployments', href: '/deployments', protected: true },
     { name: 'Solutions', href: '/solutions' },
   ];
 
