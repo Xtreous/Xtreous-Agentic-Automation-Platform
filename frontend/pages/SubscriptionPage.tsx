@@ -107,22 +107,22 @@ export default function SubscriptionPage() {
 
   const getPlanColor = (color: string) => {
     switch (color) {
-      case 'blue': return 'border-blue-500 bg-blue-50';
-      case 'purple': return 'border-purple-500 bg-purple-50';
-      case 'gold': return 'border-yellow-500 bg-yellow-50';
-      default: return 'border-gray-200 bg-white';
+      case 'blue': return 'border-blue-500 bg-blue-900/30';
+      case 'purple': return 'border-purple-500 bg-purple-900/30';
+      case 'gold': return 'border-yellow-500 bg-yellow-900/30';
+      default: return 'border-gray-700 bg-gray-900';
     }
   };
 
   if (isLoading) {
     return (
-      <div className="min-h-screen bg-gray-50 pt-24 pb-8">
+      <div className="min-h-screen bg-gray-900 pt-24 pb-8">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="animate-pulse space-y-8">
-            <div className="h-8 bg-gray-200 rounded w-1/4"></div>
+            <div className="h-8 bg-gray-700 rounded w-1/4"></div>
             <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
-              <div className="h-64 bg-gray-200 rounded"></div>
-              <div className="lg:col-span-2 h-64 bg-gray-200 rounded"></div>
+              <div className="h-64 bg-gray-700 rounded"></div>
+              <div className="lg:col-span-2 h-64 bg-gray-700 rounded"></div>
             </div>
           </div>
         </div>
@@ -131,11 +131,11 @@ export default function SubscriptionPage() {
   }
 
   return (
-    <div className="min-h-screen bg-gray-50 pt-24 pb-8">
+    <div className="min-h-screen bg-gray-900 pt-24 pb-8">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div className="mb-8">
-          <h1 className="text-3xl font-bold text-gray-900">Subscription</h1>
-          <p className="text-gray-600 mt-2">
+          <h1 className="text-3xl font-bold text-gray-100">Subscription</h1>
+          <p className="text-gray-400 mt-2">
             Manage your subscription and billing information
           </p>
         </div>
@@ -157,20 +157,20 @@ export default function SubscriptionPage() {
                       <span className="text-lg font-semibold capitalize">
                         {subscription.tier}
                       </span>
-                      <Badge className={`${subscription.status === 'active' ? 'bg-green-100 text-green-800' : 'bg-red-100 text-red-800'}`}>
+                      <Badge className={`${subscription.status === 'active' ? 'bg-green-900/50 text-green-300' : 'bg-red-900/50 text-red-300'}`}>
                         {subscription.status}
                       </Badge>
                     </div>
 
                     <div className="text-2xl font-bold">
                       ${subscription.billing.amount}
-                      <span className="text-sm font-normal text-gray-600">
+                      <span className="text-sm font-normal text-gray-400">
                         /{subscription.billing.interval}
                       </span>
                     </div>
 
                     {subscription.billing.nextBillingDate && (
-                      <div className="flex items-center text-sm text-gray-600">
+                      <div className="flex items-center text-sm text-gray-400">
                         <Calendar className="h-4 w-4 mr-2" />
                         Next billing: {new Date(subscription.billing.nextBillingDate).toLocaleDateString()}
                       </div>
@@ -252,15 +252,15 @@ export default function SubscriptionPage() {
                         <h3 className="text-xl font-bold">{plan.name}</h3>
                         <div className="mt-2">
                           <span className="text-3xl font-bold">{plan.price}</span>
-                          <span className="text-gray-600 ml-1">/{plan.interval}</span>
+                          <span className="text-gray-400 ml-1">/{plan.interval}</span>
                         </div>
-                        <p className="text-sm text-gray-600 mt-2">{plan.description}</p>
+                        <p className="text-sm text-gray-400 mt-2">{plan.description}</p>
                       </div>
 
                       <ul className="space-y-2 mb-6">
                         {plan.features.map((feature, index) => (
                           <li key={index} className="flex items-center text-sm">
-                            <CheckCircle className="h-4 w-4 text-green-500 mr-2 flex-shrink-0" />
+                            <CheckCircle className="h-4 w-4 text-green-400 mr-2 flex-shrink-0" />
                             {feature}
                           </li>
                         ))}
@@ -300,31 +300,31 @@ export default function SubscriptionPage() {
             <CardContent>
               <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
                 <div className="text-center">
-                  <div className="w-12 h-12 bg-blue-100 rounded-lg flex items-center justify-center mx-auto mb-4">
-                    <Zap className="h-6 w-6 text-blue-600" />
+                  <div className="w-12 h-12 bg-blue-900/50 rounded-lg flex items-center justify-center mx-auto mb-4">
+                    <Zap className="h-6 w-6 text-blue-400" />
                   </div>
                   <h3 className="font-semibold mb-2">More AI Agents</h3>
-                  <p className="text-sm text-gray-600">
+                  <p className="text-sm text-gray-400">
                     Deploy more AI agents to handle complex workflows and scale your automation.
                   </p>
                 </div>
 
                 <div className="text-center">
-                  <div className="w-12 h-12 bg-purple-100 rounded-lg flex items-center justify-center mx-auto mb-4">
-                    <Users className="h-6 w-6 text-purple-600" />
+                  <div className="w-12 h-12 bg-purple-900/50 rounded-lg flex items-center justify-center mx-auto mb-4">
+                    <Users className="h-6 w-6 text-purple-400" />
                   </div>
                   <h3 className="font-semibold mb-2">Team Collaboration</h3>
-                  <p className="text-sm text-gray-600">
+                  <p className="text-sm text-gray-400">
                     Add team members and collaborate on AI agent development and management.
                   </p>
                 </div>
 
                 <div className="text-center">
-                  <div className="w-12 h-12 bg-green-100 rounded-lg flex items-center justify-center mx-auto mb-4">
-                    <Shield className="h-6 w-6 text-green-600" />
+                  <div className="w-12 h-12 bg-green-900/50 rounded-lg flex items-center justify-center mx-auto mb-4">
+                    <Shield className="h-6 w-6 text-green-400" />
                   </div>
                   <h3 className="font-semibold mb-2">Priority Support</h3>
-                  <p className="text-sm text-gray-600">
+                  <p className="text-sm text-gray-400">
                     Get faster response times and dedicated support for your business needs.
                   </p>
                 </div>

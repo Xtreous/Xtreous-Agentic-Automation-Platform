@@ -109,15 +109,15 @@ export default function HomePage() {
       </section>
 
       {/* Stats Section */}
-      <section className="py-16 bg-white">
+      <section className="py-16 bg-gray-900">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="grid grid-cols-2 md:grid-cols-4 gap-8">
             {stats.map((stat, index) => (
               <div key={index} className="text-center">
-                <div className="text-3xl md:text-4xl font-bold text-blue-600 mb-2">
+                <div className="text-3xl md:text-4xl font-bold text-blue-400 mb-2">
                   {stat.value}
                 </div>
-                <div className="text-gray-600">{stat.label}</div>
+                <div className="text-gray-400">{stat.label}</div>
               </div>
             ))}
           </div>
@@ -125,13 +125,13 @@ export default function HomePage() {
       </section>
 
       {/* Features Section */}
-      <section className="py-20 bg-gray-50">
+      <section className="py-20 bg-gray-950">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="text-center mb-16">
-            <h2 className="text-3xl md:text-4xl font-bold text-gray-900 mb-4">
+            <h2 className="text-3xl md:text-4xl font-bold text-gray-100 mb-4">
               Powerful AI-Driven Automation
             </h2>
-            <p className="text-xl text-gray-600 max-w-3xl mx-auto">
+            <p className="text-xl text-gray-400 max-w-3xl mx-auto">
               Our platform combines cutting-edge AI technology with enterprise-grade security to deliver unmatched automation capabilities.
             </p>
           </div>
@@ -140,11 +140,11 @@ export default function HomePage() {
             {features.map((feature, index) => (
               <Card key={index} className="border-0 shadow-lg hover:shadow-xl transition-shadow">
                 <CardHeader>
-                  <feature.icon className="h-12 w-12 text-blue-600 mb-4" />
+                  <feature.icon className="h-12 w-12 text-blue-400 mb-4" />
                   <CardTitle className="text-xl">{feature.title}</CardTitle>
                 </CardHeader>
                 <CardContent>
-                  <CardDescription className="text-gray-600">
+                  <CardDescription className="text-gray-400">
                     {feature.description}
                   </CardDescription>
                 </CardContent>
@@ -155,13 +155,13 @@ export default function HomePage() {
       </section>
 
       {/* Industry Solutions */}
-      <section className="py-20 bg-white">
+      <section className="py-20 bg-gray-900">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="text-center mb-16">
-            <h2 className="text-3xl md:text-4xl font-bold text-gray-900 mb-4">
+            <h2 className="text-3xl md:text-4xl font-bold text-gray-100 mb-4">
               Industry-Specific Solutions
             </h2>
-            <p className="text-xl text-gray-600 max-w-3xl mx-auto">
+            <p className="text-xl text-gray-400 max-w-3xl mx-auto">
               Tailored AI agents designed for your industry's unique challenges and workflows.
             </p>
           </div>
@@ -171,7 +171,7 @@ export default function HomePage() {
               <Card key={index} className="border-0 shadow-lg hover:shadow-xl transition-shadow">
                 <CardHeader>
                   <div className="flex items-center space-x-4">
-                    <industry.icon className="h-12 w-12 text-blue-600" />
+                    <industry.icon className="h-12 w-12 text-blue-400" />
                     <div>
                       <CardTitle className="text-2xl">{industry.title}</CardTitle>
                       <CardDescription className="text-lg">
@@ -184,8 +184,8 @@ export default function HomePage() {
                   <ul className="space-y-2">
                     {industry.benefits.map((benefit, idx) => (
                       <li key={idx} className="flex items-center space-x-2">
-                        <CheckCircle className="h-5 w-5 text-green-500" />
-                        <span className="text-gray-700">{benefit}</span>
+                        <CheckCircle className="h-5 w-5 text-green-400" />
+                        <span className="text-gray-300">{benefit}</span>
                       </li>
                     ))}
                   </ul>

@@ -118,16 +118,16 @@ export default function SolutionsPage() {
 
   const getColorClasses = (color: string) => {
     switch (color) {
-      case 'blue': return 'text-blue-600 bg-blue-50 border-blue-200';
-      case 'green': return 'text-green-600 bg-green-50 border-green-200';
-      case 'purple': return 'text-purple-600 bg-purple-50 border-purple-200';
-      case 'orange': return 'text-orange-600 bg-orange-50 border-orange-200';
-      default: return 'text-blue-600 bg-blue-50 border-blue-200';
+      case 'blue': return 'text-blue-400 bg-blue-900/30 border-blue-700';
+      case 'green': return 'text-green-400 bg-green-900/30 border-green-700';
+      case 'purple': return 'text-purple-400 bg-purple-900/30 border-purple-700';
+      case 'orange': return 'text-orange-400 bg-orange-900/30 border-orange-700';
+      default: return 'text-blue-400 bg-blue-900/30 border-blue-700';
     }
   };
 
   return (
-    <div className="min-h-screen bg-gray-50">
+    <div className="min-h-screen bg-gray-900">
       {/* Hero Section */}
       <section className="bg-gradient-to-br from-gray-900 via-blue-900 to-indigo-900 text-white py-20">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
@@ -165,7 +165,7 @@ export default function SolutionsPage() {
                   <Card className={`border-2 ${getColorClasses(solution.color)}`}>
                     <CardHeader>
                       <div className="flex items-center space-x-4 mb-4">
-                        <solution.icon className={`h-12 w-12 ${solution.color === 'blue' ? 'text-blue-600' : solution.color === 'green' ? 'text-green-600' : solution.color === 'purple' ? 'text-purple-600' : 'text-orange-600'}`} />
+                        <solution.icon className={`h-12 w-12 ${solution.color === 'blue' ? 'text-blue-400' : solution.color === 'green' ? 'text-green-400' : solution.color === 'purple' ? 'text-purple-400' : 'text-orange-400'}`} />
                         <div>
                           <CardTitle className="text-2xl">{solution.title}</CardTitle>
                           <CardDescription className="text-lg font-medium">
@@ -175,7 +175,7 @@ export default function SolutionsPage() {
                       </div>
                     </CardHeader>
                     <CardContent>
-                      <p className="text-gray-600 mb-6 text-lg">
+                      <p className="text-gray-400 mb-6 text-lg">
                         {solution.description}
                       </p>
 
@@ -183,10 +183,10 @@ export default function SolutionsPage() {
                       <div className="grid grid-cols-3 gap-4 mb-6">
                         {solution.stats.map((stat, idx) => (
                           <div key={idx} className="text-center">
-                            <div className={`text-2xl font-bold ${solution.color === 'blue' ? 'text-blue-600' : solution.color === 'green' ? 'text-green-600' : solution.color === 'purple' ? 'text-purple-600' : 'text-orange-600'}`}>
+                            <div className={`text-2xl font-bold ${solution.color === 'blue' ? 'text-blue-400' : solution.color === 'green' ? 'text-green-400' : solution.color === 'purple' ? 'text-purple-400' : 'text-orange-400'}`}>
                               {stat.value}
                             </div>
-                            <div className="text-sm text-gray-600">{stat.label}</div>
+                            <div className="text-sm text-gray-400">{stat.label}</div>
                           </div>
                         ))}
                       </div>
@@ -195,8 +195,8 @@ export default function SolutionsPage() {
                       <div className="grid grid-cols-3 gap-4 mb-6">
                         {solution.features.map((feature, idx) => (
                           <div key={idx} className="text-center">
-                            <feature.icon className={`h-8 w-8 mx-auto mb-2 ${solution.color === 'blue' ? 'text-blue-600' : solution.color === 'green' ? 'text-green-600' : solution.color === 'purple' ? 'text-purple-600' : 'text-orange-600'}`} />
-                            <div className="text-sm font-medium text-gray-900">{feature.name}</div>
+                            <feature.icon className={`h-8 w-8 mx-auto mb-2 ${solution.color === 'blue' ? 'text-blue-400' : solution.color === 'green' ? 'text-green-400' : solution.color === 'purple' ? 'text-purple-400' : 'text-orange-400'}`} />
+                            <div className="text-sm font-medium text-gray-100">{feature.name}</div>
                           </div>
                         ))}
                       </div>
@@ -211,11 +211,11 @@ export default function SolutionsPage() {
 
                 <div className="lg:w-1/2">
                   <div className="space-y-4">
-                    <h3 className="text-xl font-semibold text-gray-900 mb-4">Key Benefits</h3>
+                    <h3 className="text-xl font-semibold text-gray-100 mb-4">Key Benefits</h3>
                     {solution.benefits.map((benefit, idx) => (
                       <div key={idx} className="flex items-start space-x-3">
-                        <CheckCircle className="h-6 w-6 text-green-500 mt-0.5 flex-shrink-0" />
-                        <span className="text-gray-700">{benefit}</span>
+                        <CheckCircle className="h-6 w-6 text-green-400 mt-0.5 flex-shrink-0" />
+                        <span className="text-gray-300">{benefit}</span>
                       </div>
                     ))}
                   </div>

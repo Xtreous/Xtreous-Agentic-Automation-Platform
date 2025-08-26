@@ -214,7 +214,7 @@ export default function CreateTrainingModuleDialog({ open, onOpenChange, onSucce
                       <button
                         type="button"
                         onClick={() => removePrerequisite(prerequisite)}
-                        className="ml-1 hover:bg-gray-300 rounded-full p-0.5"
+                        className="ml-1 hover:bg-gray-700 rounded-full p-0.5"
                       >
                         <X className="h-3 w-3" />
                       </button>

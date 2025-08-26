@@ -62,11 +62,11 @@ export default function MarketplaceAgentPage() {
 
   const getPricingColor = (model: string) => {
     switch (model) {
-      case 'free': return 'bg-green-100 text-green-800';
-      case 'subscription': return 'bg-blue-100 text-blue-800';
-      case 'usage_based': return 'bg-purple-100 text-purple-800';
-      case 'one_time': return 'bg-orange-100 text-orange-800';
-      default: return 'bg-gray-100 text-gray-800';
+      case 'free': return 'bg-green-900/50 text-green-300';
+      case 'subscription': return 'bg-blue-900/50 text-blue-300';
+      case 'usage_based': return 'bg-purple-900/50 text-purple-300';
+      case 'one_time': return 'bg-orange-900/50 text-orange-300';
+      default: return 'bg-gray-700 text-gray-200';
     }
   };
 
@@ -79,7 +79,7 @@ export default function MarketplaceAgentPage() {
             ? 'text-yellow-400 fill-current'
             : i < rating
             ? 'text-yellow-400 fill-current opacity-50'
-            : 'text-gray-300'
+            : 'text-gray-500'
         }`}
       />
     ));
@@ -87,16 +87,16 @@ export default function MarketplaceAgentPage() {
 
   if (isLoading) {
     return (
-      <div className="min-h-screen bg-gray-50 pt-24 pb-8">
+      <div className="min-h-screen bg-gray-900 pt-24 pb-8">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="animate-pulse space-y-8">
-            <div className="h-8 bg-gray-200 rounded w-1/4"></div>
+            <div className="h-8 bg-gray-700 rounded w-1/4"></div>
             <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
               <div className="lg:col-span-2 space-y-6">
-                <div className="h-64 bg-gray-200 rounded"></div>
-                <div className="h-32 bg-gray-200 rounded"></div>
+                <div className="h-64 bg-gray-700 rounded"></div>
+                <div className="h-32 bg-gray-700 rounded"></div>
               </div>
-              <div className="h-96 bg-gray-200 rounded"></div>
+              <div className="h-96 bg-gray-700 rounded"></div>
             </div>
           </div>
         </div>
@@ -106,10 +106,10 @@ export default function MarketplaceAgentPage() {
 
   if (!agent) {
     return (
-      <div className="min-h-screen bg-gray-50 pt-24 pb-8">
+      <div className="min-h-screen bg-gray-900 pt-24 pb-8">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="text-center py-12">
-            <h1 className="text-2xl font-bold text-gray-900 mb-4">Agent not found</h1>
+            <h1 className="text-2xl font-bold text-gray-100 mb-4">Agent not found</h1>
             <Button asChild>
               <Link to="/marketplace">Back to Marketplace</Link>
             </Button>
@@ -120,7 +120,7 @@ export default function MarketplaceAgentPage() {
   }
 
   return (
-    <div className="min-h-screen bg-gray-50 pt-24 pb-8">
+    <div className="min-h-screen bg-gray-900 pt-24 pb-8">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         {/* Breadcrumb */}
         <div className="mb-6">
@@ -140,7 +140,7 @@ export default function MarketplaceAgentPage() {
               <div className="flex items-start justify-between mb-4">
                 <div>
                   <div className="flex items-center gap-3 mb-2">
-                    <h1 className="text-3xl font-bold text-gray-900">{agent.name}</h1>
+                    <h1 className="text-3xl font-bold text-gray-100">{agent.name}</h1>
                     {agent.publisher.verified && (
                       <Shield className="h-6 w-6 text-blue-500" />
                     )}
@@ -148,15 +148,15 @@ export default function MarketplaceAgentPage() {
                       <Award className="h-6 w-6 text-yellow-500" />
                     )}
                   </div>
-                  <p className="text-lg text-gray-600 mb-4">{agent.description}</p>
+                  <p className="text-lg text-gray-400 mb-4">{agent.description}</p>
                   
                   <div className="flex items-center gap-6">
                     <div className="flex items-center gap-2">
                       {renderStars(agent.rating)}
                       <span className="font-medium">{agent.rating.toFixed(1)}</span>
-                      <span className="text-gray-600">({agent.review_count} reviews)</span>
+                      <span className="text-gray-400">({agent.review_count} reviews)</span>
                     </div>
-                    <div className="flex items-center gap-1 text-gray-600">
+                    <div className="flex items-center gap-1 text-gray-400">
                       <Download className="h-4 w-4" />
                       {agent.downloads.toLocaleString()} downloads
                     </div>
@@ -194,7 +194,7 @@ export default function MarketplaceAgentPage() {
                 <h3 className="text-lg font-semibold mb-4">Screenshots</h3>
                 <div className="grid grid-cols-2 gap-4">
                   {agent.screenshots.slice(0, 4).map((screenshot, index) => (
-                    <div key={index} className="aspect-video bg-gray-200 rounded-lg overflow-hidden">
+                    <div key={index} className="aspect-video bg-gray-700 rounded-lg overflow-hidden">
                       <img
                         src={screenshot}
                         alt={`Screenshot ${index + 1}`}
@@ -223,7 +223,7 @@ export default function MarketplaceAgentPage() {
                   <CardContent className="space-y-6">
                     <div>
                       <h4 className="font-medium mb-2">Description</h4>
-                      <p className="text-gray-600">{agent.description}</p>
+                      <p className="text-gray-400">{agent.description}</p>
                     </div>
 
                     <div>
@@ -255,7 +255,7 @@ export default function MarketplaceAgentPage() {
 
                     <div>
                       <h4 className="font-medium mb-2">Requirements</h4>
-                      <ul className="list-disc list-inside text-gray-600 space-y-1">
+                      <ul className="list-disc list-inside text-gray-400 space-y-1">
                         {agent.requirements.map((req, index) => (
                           <li key={index}>{req}</li>
                         ))}
@@ -273,8 +273,8 @@ export default function MarketplaceAgentPage() {
                   <CardContent>
                     <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                       {agent.features.map((feature, index) => (
-                        <div key={index} className="flex items-center gap-3 p-3 bg-gray-50 rounded-lg">
-                          <CheckCircle className="h-5 w-5 text-green-500" />
+                        <div key={index} className="flex items-center gap-3 p-3 bg-gray-800 rounded-lg">
+                          <CheckCircle className="h-5 w-5 text-green-400" />
                           <span>{feature}</span>
                         </div>
                       ))}
@@ -298,7 +298,7 @@ export default function MarketplaceAgentPage() {
                             <div className="flex items-center justify-center gap-1 mb-2">
                               {renderStars(reviewsData.average_rating)}
                             </div>
-                            <div className="text-gray-600">{reviewsData.total} reviews</div>
+                            <div className="text-gray-400">{reviewsData.total} reviews</div>
                           </div>
                           
                           <div className="space-y-2">
@@ -306,7 +306,7 @@ export default function MarketplaceAgentPage() {
                               <div key={breakdown.rating} className="flex items-center gap-3">
                                 <span className="text-sm w-8">{breakdown.rating}★</span>
                                 <Progress value={breakdown.percentage} className="flex-1" />
-                                <span className="text-sm text-gray-600 w-12">{breakdown.count}</span>
+                                <span className="text-sm text-gray-400 w-12">{breakdown.count}</span>
                               </div>
                             ))}
                           </div>
@@ -329,7 +329,7 @@ export default function MarketplaceAgentPage() {
                             <div className="flex items-center gap-2 mb-2">
                               <span className="font-medium">{review.user_name}</span>
                               {review.verified_purchase && (
-                                <Badge className="bg-green-100 text-green-800 text-xs">
+                                <Badge className="bg-green-900/50 text-green-300 text-xs">
                                   Verified Purchase
                                 </Badge>
                               )}
@@ -337,13 +337,13 @@ export default function MarketplaceAgentPage() {
                             
                             <div className="flex items-center gap-2 mb-2">
                               {renderStars(review.rating)}
-                              <span className="text-sm text-gray-600">
+                              <span className="text-sm text-gray-400">
                                 {new Date(review.created_at).toLocaleDateString()}
                               </span>
                             </div>
                             
                             <h4 className="font-medium mb-2">{review.title}</h4>
-                            <p className="text-gray-600 mb-3">{review.content}</p>
+                            <p className="text-gray-400 mb-3">{review.content}</p>
                             
                             <div className="flex items-center gap-4">
                               <Button variant="ghost" size="sm">
@@ -375,7 +375,7 @@ export default function MarketplaceAgentPage() {
                           <FileText className="h-5 w-5 text-blue-500" />
                           <div>
                             <div className="font-medium">Documentation</div>
-                            <div className="text-sm text-gray-600">Complete setup and usage guide</div>
+                            <div className="text-sm text-gray-400">Complete setup and usage guide</div>
                           </div>
                         </div>
                         <Button variant="outline" size="sm" asChild>
@@ -392,7 +392,7 @@ export default function MarketplaceAgentPage() {
                           <Users className="h-5 w-5 text-green-500" />
                           <div>
                             <div className="font-medium">Support Center</div>
-                            <div className="text-sm text-gray-600">Get help from the community</div>
+                            <div className="text-sm text-gray-400">Get help from the community</div>
                           </div>
                         </div>
                         <Button variant="outline" size="sm" asChild>
@@ -408,7 +408,7 @@ export default function MarketplaceAgentPage() {
                         <Calendar className="h-5 w-5 text-purple-500" />
                         <div className="font-medium">Version Information</div>
                       </div>
-                      <div className="text-sm text-gray-600 space-y-1">
+                      <div className="text-sm text-gray-400 space-y-1">
                         <div>Current version: {agent.version}</div>
                         <div>Last updated: {new Date(agent.last_updated).toLocaleDateString()}</div>
                       </div>
@@ -432,7 +432,7 @@ export default function MarketplaceAgentPage() {
                     </Badge>
                     {agent.pricing_details.free_tier && (
                       <div className="mt-2">
-                        <Badge className="bg-green-100 text-green-800">
+                        <Badge className="bg-green-900/50 text-green-300">
                           Free Tier Available
                         </Badge>
                       </div>
@@ -474,7 +474,7 @@ export default function MarketplaceAgentPage() {
                         <Shield className="h-4 w-4 text-blue-500" />
                       )}
                     </div>
-                    <div className="text-sm text-gray-600">Verified Publisher</div>
+                    <div className="text-sm text-gray-400">Verified Publisher</div>
                   </div>
                 </div>
                 <Button variant="outline" className="w-full">
@@ -490,23 +490,23 @@ export default function MarketplaceAgentPage() {
               </CardHeader>
               <CardContent className="space-y-3">
                 <div className="flex justify-between">
-                  <span className="text-gray-600">Downloads</span>
+                  <span className="text-gray-400">Downloads</span>
                   <span className="font-medium">{agent.downloads.toLocaleString()}</span>
                 </div>
                 <div className="flex justify-between">
-                  <span className="text-gray-600">Rating</span>
+                  <span className="text-gray-400">Rating</span>
                   <span className="font-medium">{agent.rating.toFixed(1)}/5</span>
                 </div>
                 <div className="flex justify-between">
-                  <span className="text-gray-600">Reviews</span>
+                  <span className="text-gray-400">Reviews</span>
                   <span className="font-medium">{agent.review_count}</span>
                 </div>
                 <div className="flex justify-between">
-                  <span className="text-gray-600">Version</span>
+                  <span className="text-gray-400">Version</span>
                   <span className="font-medium">{agent.version}</span>
                 </div>
                 <div className="flex justify-between">
-                  <span className="text-gray-600">Updated</span>
+                  <span className="text-gray-400">Updated</span>
                   <span className="font-medium">{new Date(agent.last_updated).toLocaleDateString()}</span>
                 </div>
               </CardContent>

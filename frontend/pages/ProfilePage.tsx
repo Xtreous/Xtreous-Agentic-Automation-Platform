@@ -46,18 +46,18 @@ export default function ProfilePage() {
 
   const getRoleBadgeColor = (role: string) => {
     switch (role) {
-      case 'super_admin': return 'bg-purple-100 text-purple-800';
-      case 'admin': return 'bg-blue-100 text-blue-800';
-      default: return 'bg-gray-100 text-gray-800';
+      case 'super_admin': return 'bg-purple-900/50 text-purple-300';
+      case 'admin': return 'bg-blue-900/50 text-blue-300';
+      default: return 'bg-gray-700 text-gray-200';
     }
   };
 
   const getSubscriptionBadgeColor = (tier: string) => {
     switch (tier) {
-      case 'enterprise': return 'bg-purple-100 text-purple-800';
-      case 'professional': return 'bg-blue-100 text-blue-800';
-      case 'starter': return 'bg-green-100 text-green-800';
-      default: return 'bg-gray-100 text-gray-800';
+      case 'enterprise': return 'bg-purple-900/50 text-purple-300';
+      case 'professional': return 'bg-blue-900/50 text-blue-300';
+      case 'starter': return 'bg-green-900/50 text-green-300';
+      default: return 'bg-gray-700 text-gray-200';
     }
   };
 
@@ -66,11 +66,11 @@ export default function ProfilePage() {
   }
 
   return (
-    <div className="min-h-screen bg-gray-50 pt-24 pb-8">
+    <div className="min-h-screen bg-gray-900 pt-24 pb-8">
       <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8">
         <div className="mb-8">
-          <h1 className="text-3xl font-bold text-gray-900">Profile</h1>
-          <p className="text-gray-600 mt-2">
+          <h1 className="text-3xl font-bold text-gray-100">Profile</h1>
+          <p className="text-gray-400 mt-2">
             Manage your account settings and preferences
           </p>
         </div>
@@ -118,9 +118,9 @@ export default function ProfilePage() {
                       type="email"
                       value={user.email}
                       disabled
-                      className="mt-1 bg-gray-50"
+                      className="mt-1 bg-gray-800"
                     />
-                    <p className="text-xs text-gray-500 mt-1">
+                    <p className="text-xs text-gray-400 mt-1">
                       Email cannot be changed. Contact support if you need to update your email.
                     </p>
                   </div>
@@ -145,14 +145,14 @@ export default function ProfilePage() {
               </CardHeader>
               <CardContent className="space-y-4">
                 <div className="flex items-center justify-between">
-                  <span className="text-sm text-gray-600">Role</span>
+                  <span className="text-sm text-gray-400">Role</span>
                   <Badge className={`text-xs ${getRoleBadgeColor(user.role)}`}>
                     {user.role.replace('_', ' ')}
                   </Badge>
                 </div>
 
                 <div className="flex items-center justify-between">
-                  <span className="text-sm text-gray-600">Subscription</span>
+                  <span className="text-sm text-gray-400">Subscription</span>
                   <Badge className={`text-xs ${getSubscriptionBadgeColor(user.subscriptionTier)}`}>
                     {user.subscriptionTier}
                   </Badge>
@@ -160,7 +160,7 @@ export default function ProfilePage() {
 
                 {user.organizationName && (
                   <div className="flex items-center justify-between">
-                    <span className="text-sm text-gray-600">Organization</span>
+                    <span className="text-sm text-gray-400">Organization</span>
                     <span className="text-sm font-medium">{user.organizationName}</span>
                   </div>
                 )}
@@ -168,7 +168,7 @@ export default function ProfilePage() {
                 <Separator />
 
                 <div className="flex items-center justify-between">
-                  <span className="text-sm text-gray-600">Member since</span>
+                  <span className="text-sm text-gray-400">Member since</span>
                   <span className="text-sm font-medium">
                     {new Date(user.createdAt).toLocaleDateString()}
                   </span>
@@ -176,7 +176,7 @@ export default function ProfilePage() {
 
                 {user.lastLoginAt && (
                   <div className="flex items-center justify-between">
-                    <span className="text-sm text-gray-600">Last login</span>
+                    <span className="text-sm text-gray-400">Last login</span>
                     <span className="text-sm font-medium">
                       {new Date(user.lastLoginAt).toLocaleDateString()}
                     </span>

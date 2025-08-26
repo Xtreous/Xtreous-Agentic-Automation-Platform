@@ -66,28 +66,28 @@ const nodeTypes = [
     name: 'Action',
     icon: Zap,
     description: 'Perform an action or task',
-    color: 'bg-blue-100 text-blue-800 border-blue-300'
+    color: 'bg-blue-900/50 text-blue-300 border-blue-700'
   },
   {
     type: 'condition',
     name: 'Condition',
     icon: GitBranch,
     description: 'Branch based on conditions',
-    color: 'bg-yellow-100 text-yellow-800 border-yellow-300'
+    color: 'bg-yellow-900/50 text-yellow-300 border-yellow-700'
   },
   {
     type: 'integration',
     name: 'Integration',
     icon: Database,
     description: 'Connect to external services',
-    color: 'bg-green-100 text-green-800 border-green-300'
+    color: 'bg-green-900/50 text-green-300 border-green-700'
   },
   {
     type: 'delay',
     name: 'Delay',
     icon: Clock,
     description: 'Wait for a specified time',
-    color: 'bg-purple-100 text-purple-800 border-purple-300'
+    color: 'bg-purple-900/50 text-purple-300 border-purple-700'
   }
 ];
 
@@ -262,13 +262,13 @@ export default function WorkflowBuilder({ initialWorkflow, onSave, onTest }: Wor
 
   const getNodeColor = (type: string) => {
     switch (type) {
-      case 'start': return 'bg-green-100 text-green-800 border-green-300';
-      case 'end': return 'bg-red-100 text-red-800 border-red-300';
-      case 'action': return 'bg-blue-100 text-blue-800 border-blue-300';
-      case 'condition': return 'bg-yellow-100 text-yellow-800 border-yellow-300';
-      case 'integration': return 'bg-purple-100 text-purple-800 border-purple-300';
-      case 'delay': return 'bg-orange-100 text-orange-800 border-orange-300';
-      default: return 'bg-gray-100 text-gray-800 border-gray-300';
+      case 'start': return 'bg-green-900/50 text-green-300 border-green-700';
+      case 'end': return 'bg-red-900/50 text-red-300 border-red-700';
+      case 'action': return 'bg-blue-900/50 text-blue-300 border-blue-700';
+      case 'condition': return 'bg-yellow-900/50 text-yellow-300 border-yellow-700';
+      case 'integration': return 'bg-purple-900/50 text-purple-300 border-purple-700';
+      case 'delay': return 'bg-orange-900/50 text-orange-300 border-orange-700';
+      default: return 'bg-gray-700 text-gray-200 border-gray-600';
     }
   };
 
@@ -293,7 +293,7 @@ export default function WorkflowBuilder({ initialWorkflow, onSave, onTest }: Wor
           y1={fromY}
           x2={toX}
           y2={toY}
-          stroke="#6b7280"
+          stroke="#9ca3af"
           strokeWidth="2"
           markerEnd="url(#arrowhead)"
         />
@@ -302,7 +302,7 @@ export default function WorkflowBuilder({ initialWorkflow, onSave, onTest }: Wor
             x={midX}
             y={midY - 5}
             textAnchor="middle"
-            className="text-xs fill-gray-600"
+            className="text-xs fill-gray-400"
             style={{ fontSize: '12px' }}
           >
             {connection.label}
@@ -315,9 +315,9 @@ export default function WorkflowBuilder({ initialWorkflow, onSave, onTest }: Wor
   return (
     <div className="h-full flex">
       {/* Toolbar */}
-      <div className="w-64 bg-white border-r border-gray-200 flex flex-col">
-        <div className="p-4 border-b border-gray-200">
-          <h3 className="font-semibold text-gray-900 mb-4">Workflow Builder</h3>
+      <div className="w-64 bg-gray-900 border-r border-gray-700 flex flex-col">
+        <div className="p-4 border-b border-gray-700">
+          <h3 className="font-semibold text-gray-100 mb-4">Workflow Builder</h3>
           
           <div className="space-y-3">
             <div>
@@ -343,15 +343,15 @@ export default function WorkflowBuilder({ initialWorkflow, onSave, onTest }: Wor
           </div>
         </div>
 
-        <div className="p-4 border-b border-gray-200">
+        <div className="p-4 border-b border-gray-700">
           <div className="flex items-center justify-between mb-3">
-            <h4 className="font-medium text-gray-900">Actions</h4>
+            <h4 className="font-medium text-gray-100">Actions</h4>
             <div className="flex gap-1">
               <Button
                 size="sm"
                 variant="outline"
                 onClick={() => setIsConnecting(!isConnecting)}
-                className={isConnecting ? 'bg-blue-50 border-blue-300' : ''}
+                className={isConnecting ? 'bg-blue-900/30 border-blue-700' : ''}
               >
                 <ArrowRight className="h-4 w-4" />
               </Button>
@@ -372,21 +372,21 @@ export default function WorkflowBuilder({ initialWorkflow, onSave, onTest }: Wor
           </div>
 
           {isConnecting && (
-            <div className="p-2 bg-blue-50 border border-blue-200 rounded text-sm text-blue-800">
+            <div className="p-2 bg-blue-900/30 border border-blue-800 rounded text-sm text-blue-200">
               Click on nodes to connect them
             </div>
           )}
         </div>
 
         <div className="flex-1 p-4">
-          <h4 className="font-medium text-gray-900 mb-3">Add Nodes</h4>
+          <h4 className="font-medium text-gray-100 mb-3">Add Nodes</h4>
           <div className="space-y-2">
             {nodeTypes.map((nodeType) => {
               const Icon = nodeType.icon;
               return (
                 <div
                   key={nodeType.type}
-                  className={`p-3 border-2 border-dashed rounded-lg cursor-pointer hover:bg-gray-50 ${nodeType.color}`}
+                  className={`p-3 border-2 border-dashed rounded-lg cursor-pointer hover:bg-gray-800 ${nodeType.color}`}
                   onClick={() => {
                     const canvas = canvasRef.current;
                     if (canvas) {
@@ -416,7 +416,7 @@ export default function WorkflowBuilder({ initialWorkflow, onSave, onTest }: Wor
       <div className="flex-1 relative">
         <div
           ref={canvasRef}
-          className="w-full h-full bg-gray-50 relative overflow-hidden"
+          className="w-full h-full bg-gray-800 relative overflow-hidden"
           onMouseMove={handleMouseMove}
           onMouseUp={handleMouseUp}
           onClick={handleCanvasClick}
@@ -425,7 +425,7 @@ export default function WorkflowBuilder({ initialWorkflow, onSave, onTest }: Wor
           <svg className="absolute inset-0 w-full h-full pointer-events-none">
             <defs>
               <pattern id="grid" width="20" height="20" patternUnits="userSpaceOnUse">
-                <path d="M 20 0 L 0 0 0 20" fill="none" stroke="#e5e7eb" strokeWidth="1"/>
+                <path d="M 20 0 L 0 0 0 20" fill="none" stroke="#374151" strokeWidth="1"/>
               </pattern>
               <marker
                 id="arrowhead"
@@ -435,7 +435,7 @@ export default function WorkflowBuilder({ initialWorkflow, onSave, onTest }: Wor
                 refY="3.5"
                 orient="auto"
               >
-                <polygon points="0 0, 10 3.5, 0 7" fill="#6b7280" />
+                <polygon points="0 0, 10 3.5, 0 7" fill="#9ca3af" />
               </marker>
             </defs>
             <rect width="100%" height="100%" fill="url(#grid)" />
@@ -478,7 +478,7 @@ export default function WorkflowBuilder({ initialWorkflow, onSave, onTest }: Wor
                             e.stopPropagation();
                             deleteNode(node.id);
                           }}
-                          className="h-6 w-6 p-0 hover:bg-red-100"
+                          className="h-6 w-6 p-0 hover:bg-red-900/30"
                         >
                           <Trash2 className="h-3 w-3" />
                         </Button>
@@ -506,9 +506,9 @@ export default function WorkflowBuilder({ initialWorkflow, onSave, onTest }: Wor
 
       {/* Properties Panel */}
       {selectedNode && (
-        <div className="w-80 bg-white border-l border-gray-200 p-4">
+        <div className="w-80 bg-gray-900 border-l border-gray-700 p-4">
           <div className="flex items-center justify-between mb-4">
-            <h3 className="font-semibold text-gray-900">Node Properties</h3>
+            <h3 className="font-semibold text-gray-100">Node Properties</h3>
             <Button
               size="sm"
               variant="ghost"

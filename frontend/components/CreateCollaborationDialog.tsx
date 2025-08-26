@@ -139,7 +139,7 @@ export default function CreateCollaborationDialog({ open, onOpenChange, onSucces
                       <Label htmlFor={agent.id.toString()} className="text-sm font-medium cursor-pointer">
                         {agent.name}
                       </Label>
-                      <div className="text-xs text-gray-500">
+                      <div className="text-xs text-gray-400">
                         {agent.type} • {agent.industry}
                       </div>
                     </div>
@@ -151,7 +151,7 @@ export default function CreateCollaborationDialog({ open, onOpenChange, onSucces
               </div>
               {selectedAgents.length > 0 && (
                 <div className="mt-2">
-                  <div className="text-sm text-gray-600 mb-2">Selected agents:</div>
+                  <div className="text-sm text-gray-400 mb-2">Selected agents:</div>
                   <div className="flex flex-wrap gap-2">
                     {selectedAgents.map((agentId) => (
                       <Badge key={agentId} variant="secondary" className="text-xs">
@@ -159,7 +159,7 @@ export default function CreateCollaborationDialog({ open, onOpenChange, onSucces
                         <button
                           type="button"
                           onClick={() => handleAgentToggle(agentId, false)}
-                          className="ml-1 hover:bg-gray-300 rounded-full p-0.5"
+                          className="ml-1 hover:bg-gray-700 rounded-full p-0.5"
                         >
                           <X className="h-3 w-3" />
                         </button>
@@ -189,7 +189,7 @@ export default function CreateCollaborationDialog({ open, onOpenChange, onSucces
                     ))}
                   </SelectContent>
                 </Select>
-                <div className="text-xs text-gray-500">
+                <div className="text-xs text-gray-400">
                   The coordinator agent will manage task distribution and communication flow.
                 </div>
               </div>

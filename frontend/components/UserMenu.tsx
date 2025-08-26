@@ -25,18 +25,18 @@ export default function UserMenu() {
 
   const getRoleBadgeColor = (role: string) => {
     switch (role) {
-      case 'super_admin': return 'bg-purple-100 text-purple-800';
-      case 'admin': return 'bg-blue-100 text-blue-800';
-      default: return 'bg-gray-100 text-gray-800';
+      case 'super_admin': return 'bg-purple-900/50 text-purple-300';
+      case 'admin': return 'bg-blue-900/50 text-blue-300';
+      default: return 'bg-gray-700 text-gray-200';
     }
   };
 
   const getSubscriptionBadgeColor = (tier: string) => {
     switch (tier) {
-      case 'enterprise': return 'bg-purple-100 text-purple-800';
-      case 'professional': return 'bg-blue-100 text-blue-800';
-      case 'starter': return 'bg-green-100 text-green-800';
-      default: return 'bg-gray-100 text-gray-800';
+      case 'enterprise': return 'bg-purple-900/50 text-purple-300';
+      case 'professional': return 'bg-blue-900/50 text-blue-300';
+      case 'starter': return 'bg-green-900/50 text-green-300';
+      default: return 'bg-gray-700 text-gray-200';
     }
   };
 
@@ -45,7 +45,7 @@ export default function UserMenu() {
       <DropdownMenuTrigger asChild>
         <Button variant="ghost" className="relative h-8 w-8 rounded-full">
           <Avatar className="h-8 w-8">
-            <AvatarFallback className="bg-blue-600 text-white">
+            <AvatarFallback className="bg-blue-500 text-white">
               {getInitials(user.firstName, user.lastName)}
             </AvatarFallback>
           </Avatar>

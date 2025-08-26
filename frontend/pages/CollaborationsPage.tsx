@@ -46,10 +46,10 @@ export default function CollaborationsPage() {
 
   const getStatusColor = (status: string) => {
     switch (status) {
-      case 'active': return 'bg-green-100 text-green-800';
-      case 'paused': return 'bg-yellow-100 text-yellow-800';
-      case 'completed': return 'bg-blue-100 text-blue-800';
-      default: return 'bg-gray-100 text-gray-800';
+      case 'active': return 'bg-green-900/50 text-green-300';
+      case 'paused': return 'bg-yellow-900/50 text-yellow-300';
+      case 'completed': return 'bg-blue-900/50 text-blue-300';
+      default: return 'bg-gray-700 text-gray-200';
     }
   };
 
@@ -65,14 +65,14 @@ export default function CollaborationsPage() {
   };
 
   return (
-    <div className="min-h-screen bg-gray-50 pt-24 pb-8">
+    <div className="min-h-screen bg-gray-900 pt-24 pb-8">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         {/* Header */}
         <div className="mb-8">
           <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
             <div>
-              <h1 className="text-3xl font-bold text-gray-900">Agent Collaborations</h1>
-              <p className="text-gray-600 mt-2">
+              <h1 className="text-3xl font-bold text-gray-100">Agent Collaborations</h1>
+              <p className="text-gray-400 mt-2">
                 Manage multi-agent workflows and team collaborations
               </p>
             </div>
@@ -105,7 +105,7 @@ export default function CollaborationsPage() {
               <SelectItem value="completed">Completed</SelectItem>
             </SelectContent>
           </Select>
-          <div className="col-span-2 text-sm text-gray-600 flex items-center">
+          <div className="col-span-2 text-sm text-gray-400 flex items-center">
             Total: {collaborationsData?.total || 0} collaborations
           </div>
         </div>
@@ -116,13 +116,13 @@ export default function CollaborationsPage() {
             {[...Array(4)].map((_, i) => (
               <Card key={i} className="animate-pulse">
                 <CardHeader>
-                  <div className="h-6 bg-gray-200 rounded w-3/4"></div>
-                  <div className="h-4 bg-gray-200 rounded w-1/2"></div>
+                  <div className="h-6 bg-gray-700 rounded w-3/4"></div>
+                  <div className="h-4 bg-gray-700 rounded w-1/2"></div>
                 </CardHeader>
                 <CardContent>
                   <div className="space-y-2">
-                    <div className="h-4 bg-gray-200 rounded"></div>
-                    <div className="h-4 bg-gray-200 rounded w-2/3"></div>
+                    <div className="h-4 bg-gray-700 rounded"></div>
+                    <div className="h-4 bg-gray-700 rounded w-2/3"></div>
                   </div>
                 </CardContent>
               </Card>
@@ -138,7 +138,7 @@ export default function CollaborationsPage() {
                     <div className="flex items-start justify-between">
                       <div className="flex-1">
                         <CardTitle className="text-lg flex items-center gap-2">
-                          <Users className="h-5 w-5 text-blue-600" />
+                          <Users className="h-5 w-5 text-blue-400" />
                           {collaboration.name}
                         </CardTitle>
                         <CardDescription className="mt-1">
@@ -155,7 +155,7 @@ export default function CollaborationsPage() {
                     <div className="space-y-4">
                       {/* Participating Agents */}
                       <div>
-                        <h4 className="text-sm font-medium text-gray-700 mb-2">
+                        <h4 className="text-sm font-medium text-gray-300 mb-2">
                           Participating Agents ({collaboration.participating_agents.length})
                         </h4>
                         <div className="flex flex-wrap gap-2">
@@ -165,7 +165,7 @@ export default function CollaborationsPage() {
                               variant="outline" 
                               className={`text-xs ${
                                 collaboration.coordinator_agent_id === agentId 
-                                  ? 'border-yellow-300 bg-yellow-50 text-yellow-800' 
+                                  ? 'border-yellow-500 bg-yellow-900/30 text-yellow-300' 
                                   : ''
                               }`}
                             >
@@ -181,21 +181,21 @@ export default function CollaborationsPage() {
                       {/* Recent Messages */}
                       {recentMessages.length > 0 && (
                         <div>
-                          <h4 className="text-sm font-medium text-gray-700 mb-2 flex items-center gap-2">
+                          <h4 className="text-sm font-medium text-gray-300 mb-2 flex items-center gap-2">
                             <MessageSquare className="h-4 w-4" />
                             Recent Activity
                           </h4>
                           <div className="space-y-2">
                             {recentMessages.map((message) => (
-                              <div key={message.id} className="text-sm bg-gray-50 rounded p-2">
+                              <div key={message.id} className="text-sm bg-gray-800 rounded p-2">
                                 <div className="flex items-center gap-2 mb-1">
-                                  <span className="font-medium text-gray-700">
+                                  <span className="font-medium text-gray-300">
                                     {getAgentName(message.from_agent_id)}
                                   </span>
                                   {message.to_agent_id && (
                                     <>
                                       <ArrowRight className="h-3 w-3 text-gray-400" />
-                                      <span className="text-gray-600">
+                                      <span className="text-gray-400">
                                         {getAgentName(message.to_agent_id)}
                                       </span>
                                     </>
@@ -204,7 +204,7 @@ export default function CollaborationsPage() {
                                     {message.message_type}
                                   </Badge>
                                 </div>
-                                <p className="text-gray-600 line-clamp-2">{message.content}</p>
+                                <p className="text-gray-400 line-clamp-2">{message.content}</p>
                               </div>
                             ))}
                           </div>
@@ -212,7 +212,7 @@ export default function CollaborationsPage() {
                       )}
 
                       {/* Metadata */}
-                      <div className="flex items-center justify-between text-sm text-gray-500 pt-2 border-t">
+                      <div className="flex items-center justify-between text-sm text-gray-400 pt-2 border-t">
                         <div className="flex items-center gap-2">
                           <Calendar className="h-4 w-4" />
                           Created: {new Date(collaboration.created_at).toLocaleDateString()}
@@ -239,8 +239,8 @@ export default function CollaborationsPage() {
         {filteredCollaborations.length === 0 && !isLoading && (
           <div className="text-center py-12">
             <Users className="h-12 w-12 text-gray-400 mx-auto mb-4" />
-            <h3 className="text-lg font-medium text-gray-900 mb-2">No collaborations found</h3>
-            <p className="text-gray-600 mb-4">
+            <h3 className="text-lg font-medium text-gray-100 mb-2">No collaborations found</h3>
+            <p className="text-gray-400 mb-4">
               {searchTerm || statusFilter
                 ? 'Try adjusting your filters to see more results.'
                 : 'Get started by creating your first agent collaboration.'}

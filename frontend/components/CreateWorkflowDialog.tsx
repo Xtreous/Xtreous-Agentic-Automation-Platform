@@ -205,7 +205,7 @@ export default function CreateWorkflowDialog({ open, onOpenChange, onSuccess }: 
                   </Card>
                   {index < steps.length - 1 && (
                     <div className="flex justify-center py-2">
-                      <ArrowDown className="h-4 w-4 text-gray-400" />
+                      <ArrowDown className="h-4 w-4 text-gray-600" />
                     </div>
                   )}
                 </div>
@@ -213,8 +213,8 @@ export default function CreateWorkflowDialog({ open, onOpenChange, onSuccess }: 
             </div>
 
             {steps.length === 0 && (
-              <div className="text-center py-8 border-2 border-dashed border-gray-300 rounded-lg">
-                <p className="text-gray-500 mb-2">No steps added yet</p>
+              <div className="text-center py-8 border-2 border-dashed border-gray-700 rounded-lg">
+                <p className="text-gray-400 mb-2">No steps added yet</p>
                 <Button type="button" variant="outline" onClick={addStep}>
                   <Plus className="h-4 w-4 mr-1" />
                   Add First Step

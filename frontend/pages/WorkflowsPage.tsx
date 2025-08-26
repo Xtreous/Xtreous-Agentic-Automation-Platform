@@ -35,10 +35,10 @@ export default function WorkflowsPage() {
 
   const getStatusColor = (status: string) => {
     switch (status) {
-      case 'active': return 'bg-green-100 text-green-800';
-      case 'draft': return 'bg-yellow-100 text-yellow-800';
-      case 'inactive': return 'bg-gray-100 text-gray-800';
-      default: return 'bg-gray-100 text-gray-800';
+      case 'active': return 'bg-green-900/50 text-green-300';
+      case 'draft': return 'bg-yellow-900/50 text-yellow-300';
+      case 'inactive': return 'bg-gray-700 text-gray-200';
+      default: return 'bg-gray-700 text-gray-200';
     }
   };
 
@@ -61,14 +61,14 @@ export default function WorkflowsPage() {
   };
 
   return (
-    <div className="min-h-screen bg-gray-50 pt-24 pb-8">
+    <div className="min-h-screen bg-gray-900 pt-24 pb-8">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         {/* Header */}
         <div className="mb-8">
           <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
             <div>
-              <h1 className="text-3xl font-bold text-gray-900">Workflows</h1>
-              <p className="text-gray-600 mt-2">
+              <h1 className="text-3xl font-bold text-gray-100">Workflows</h1>
+              <p className="text-gray-400 mt-2">
                 Design and manage automated business processes
               </p>
             </div>
@@ -119,7 +119,7 @@ export default function WorkflowsPage() {
               <SelectItem value="inactive">Inactive</SelectItem>
             </SelectContent>
           </Select>
-          <div className="text-sm text-gray-600 flex items-center">
+          <div className="text-sm text-gray-400 flex items-center">
             Total: {workflowsData?.total || 0} workflows
           </div>
         </div>
@@ -130,13 +130,13 @@ export default function WorkflowsPage() {
             {[...Array(6)].map((_, i) => (
               <Card key={i} className="animate-pulse">
                 <CardHeader>
-                  <div className="h-6 bg-gray-200 rounded w-3/4"></div>
-                  <div className="h-4 bg-gray-200 rounded w-1/2"></div>
+                  <div className="h-6 bg-gray-700 rounded w-3/4"></div>
+                  <div className="h-4 bg-gray-700 rounded w-1/2"></div>
                 </CardHeader>
                 <CardContent>
                   <div className="space-y-2">
-                    <div className="h-4 bg-gray-200 rounded"></div>
-                    <div className="h-4 bg-gray-200 rounded w-2/3"></div>
+                    <div className="h-4 bg-gray-700 rounded"></div>
+                    <div className="h-4 bg-gray-700 rounded w-2/3"></div>
                   </div>
                 </CardContent>
               </Card>
@@ -151,7 +151,7 @@ export default function WorkflowsPage() {
                   <CardHeader>
                     <div className="flex items-start justify-between">
                       <div className="flex items-center space-x-3">
-                        <Workflow className="h-8 w-8 text-blue-600" />
+                        <Workflow className="h-8 w-8 text-blue-400" />
                         <div>
                           <CardTitle className="text-lg">{workflow.name}</CardTitle>
                           <CardDescription className="capitalize">
@@ -166,20 +166,20 @@ export default function WorkflowsPage() {
                     </div>
                   </CardHeader>
                   <CardContent>
-                    <p className="text-gray-600 mb-4 line-clamp-2">
+                    <p className="text-gray-400 mb-4 line-clamp-2">
                       {workflow.description || 'No description available'}
                     </p>
                     
                     <div className="space-y-3">
                       <div className="flex justify-between items-center">
-                        <span className="text-sm text-gray-500">Steps</span>
+                        <span className="text-sm text-gray-400">Steps</span>
                         <span className="text-sm font-medium">
                           {workflow.steps?.length || 0} steps
                         </span>
                       </div>
                       
                       <div className="flex justify-between items-center">
-                        <span className="text-sm text-gray-500">Created</span>
+                        <span className="text-sm text-gray-400">Created</span>
                         <span className="text-sm font-medium">
                           {new Date(workflow.created_at).toLocaleDateString()}
                         </span>
@@ -210,8 +210,8 @@ export default function WorkflowsPage() {
         {filteredWorkflows.length === 0 && !isLoading && (
           <div className="text-center py-12">
             <Workflow className="h-12 w-12 text-gray-400 mx-auto mb-4" />
-            <h3 className="text-lg font-medium text-gray-900 mb-2">No workflows found</h3>
-            <p className="text-gray-600 mb-4">
+            <h3 className="text-lg font-medium text-gray-100 mb-2">No workflows found</h3>
+            <p className="text-gray-400 mb-4">
               {searchTerm || industryFilter || statusFilter
                 ? 'Try adjusting your filters to see more results.'
                 : 'Get started by creating your first workflow.'}

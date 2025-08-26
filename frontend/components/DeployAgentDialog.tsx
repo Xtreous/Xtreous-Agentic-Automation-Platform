@@ -280,7 +280,7 @@ export function DeployAgentDialog({ open, onOpenChange, onSuccess }: DeployAgent
               onChange={(e) => setFormData({ ...formData, configuration: e.target.value })}
               rows={4}
             />
-            <p className="text-sm text-gray-500">
+            <p className="text-sm text-gray-400">
               Optional JSON configuration for the agent deployment
             </p>
           </div>

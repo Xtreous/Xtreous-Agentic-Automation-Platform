@@ -158,41 +158,41 @@ export function DeploymentPage() {
   const getStatusColor = (status: string) => {
     switch (status) {
       case 'deployed':
-        return 'bg-green-100 text-green-800';
+        return 'bg-green-900/50 text-green-300';
       case 'deploying':
-        return 'bg-yellow-100 text-yellow-800';
+        return 'bg-yellow-900/50 text-yellow-300';
       case 'failed':
-        return 'bg-red-100 text-red-800';
+        return 'bg-red-900/50 text-red-300';
       case 'stopped':
-        return 'bg-gray-100 text-gray-800';
+        return 'bg-gray-700 text-gray-200';
       default:
-        return 'bg-blue-100 text-blue-800';
+        return 'bg-blue-900/50 text-blue-300';
     }
   };
 
   const getHealthScoreColor = (score: number) => {
-    if (score >= 90) return 'text-green-600';
-    if (score >= 70) return 'text-yellow-600';
-    if (score >= 50) return 'text-orange-600';
-    return 'text-red-600';
+    if (score >= 90) return 'text-green-400';
+    if (score >= 70) return 'text-yellow-400';
+    if (score >= 50) return 'text-orange-400';
+    return 'text-red-400';
   };
 
   if (loading) {
     return (
       <div className="flex items-center justify-center h-64">
-        <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-blue-600"></div>
+        <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-blue-400"></div>
       </div>
     );
   }
 
   return (
-    <div className="min-h-screen bg-gray-50 pt-24 pb-8">
+    <div className="min-h-screen bg-gray-900 pt-24 pb-8">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div className="space-y-6">
           <div className="flex justify-between items-center">
             <div>
-              <h1 className="text-3xl font-bold text-gray-900">Agent Deployments</h1>
-              <p className="text-gray-600">Deploy, configure, and monitor your AI agents</p>
+              <h1 className="text-3xl font-bold text-gray-100">Agent Deployments</h1>
+              <p className="text-gray-400">Deploy, configure, and monitor your AI agents</p>
             </div>
             <Button onClick={() => setShowDeployDialog(true)}>
               <Play className="h-4 w-4 mr-2" />
@@ -216,8 +216,8 @@ export function DeploymentPage() {
                       key={deployment.id}
                       className={`p-3 rounded-lg border cursor-pointer transition-colors ${
                         selectedDeployment?.id === deployment.id
-                          ? 'border-blue-500 bg-blue-50'
-                          : 'border-gray-200 hover:border-gray-300'
+                          ? 'border-blue-500 bg-blue-900/30'
+                          : 'border-gray-700 hover:border-gray-600'
                       }`}
                       onClick={() => setSelectedDeployment(deployment)}
                     >
@@ -230,7 +230,7 @@ export function DeploymentPage() {
                           {deployment.status}
                         </Badge>
                       </div>
-                      <div className="text-sm text-gray-600">
+                      <div className="text-sm text-gray-400">
                         <div>Environment: {deployment.environment}</div>
                         {deployment.endpoint_url && (
                           <div className="truncate">URL: {deployment.endpoint_url}</div>
@@ -239,7 +239,7 @@ export function DeploymentPage() {
                     </div>
                   ))}
                   {deployments.length === 0 && (
-                    <div className="text-center py-8 text-gray-500">
+                    <div className="text-center py-8 text-gray-400">
                       No deployments found. Deploy your first agent to get started.
                     </div>
                   )}
@@ -293,18 +293,18 @@ export function DeploymentPage() {
                       <CardContent className="space-y-4">
                         <div className="grid grid-cols-2 gap-4">
                           <div>
-                            <label className="text-sm font-medium text-gray-500">Status</label>
+                            <label className="text-sm font-medium text-gray-400">Status</label>
                             <div className="flex items-center space-x-2 mt-1">
                               {getStatusIcon(selectedDeployment.status)}
                               <span className="capitalize">{selectedDeployment.status}</span>
                             </div>
                           </div>
                           <div>
-                            <label className="text-sm font-medium text-gray-500">Environment</label>
+                            <label className="text-sm font-medium text-gray-400">Environment</label>
                             <div className="mt-1 capitalize">{selectedDeployment.environment}</div>
                           </div>
                           <div>
-                            <label className="text-sm font-medium text-gray-500">Deployed At</label>
+                            <label className="text-sm font-medium text-gray-400">Deployed At</label>
                             <div className="mt-1">
                               {selectedDeployment.deployed_at
                                 ? new Date(selectedDeployment.deployed_at).toLocaleString()
@@ -312,7 +312,7 @@ export function DeploymentPage() {
                             </div>
                           </div>
                           <div>
-                            <label className="text-sm font-medium text-gray-500">Last Health Check</label>
+                            <label className="text-sm font-medium text-gray-400">Last Health Check</label>
                             <div className="mt-1">
                               {selectedDeployment.last_health_check
                                 ? new Date(selectedDeployment.last_health_check).toLocaleString()
@@ -323,15 +323,15 @@ export function DeploymentPage() {
 
                         {selectedDeployment.endpoint_url && (
                           <div>
-                            <label className="text-sm font-medium text-gray-500">Endpoint URL</label>
-                            <div className="mt-1 p-2 bg-gray-50 rounded border font-mono text-sm">
+                            <label className="text-sm font-medium text-gray-400">Endpoint URL</label>
+                            <div className="mt-1 p-2 bg-gray-800 rounded border font-mono text-sm">
                               {selectedDeployment.endpoint_url}
                             </div>
                           </div>
                         )}
 
                         <div>
-                          <label className="text-sm font-medium text-gray-500 mb-2 block">
+                          <label className="text-sm font-medium text-gray-400 mb-2 block">
                             Resource Allocation
                           </label>
                           <div className="grid grid-cols-3 gap-4">
@@ -367,7 +367,7 @@ export function DeploymentPage() {
                             <CardContent className="p-4">
                               <div className="flex items-center justify-between">
                                 <div>
-                                  <p className="text-sm font-medium text-gray-600">Health Score</p>
+                                  <p className="text-sm font-medium text-gray-400">Health Score</p>
                                   <p className={`text-2xl font-bold ${getHealthScoreColor(monitoring.health_score)}`}>
                                     {monitoring.health_score}%
                                   </p>
@@ -381,8 +381,8 @@ export function DeploymentPage() {
                             <CardContent className="p-4">
                               <div className="flex items-center justify-between">
                                 <div>
-                                  <p className="text-sm font-medium text-gray-600">Tasks Processed</p>
-                                  <p className="text-2xl font-bold text-gray-900">
+                                  <p className="text-sm font-medium text-gray-400">Tasks Processed</p>
+                                  <p className="text-2xl font-bold text-gray-100">
                                     {monitoring.performance_metrics.tasks_processed}
                                   </p>
                                 </div>
@@ -395,8 +395,8 @@ export function DeploymentPage() {
                             <CardContent className="p-4">
                               <div className="flex items-center justify-between">
                                 <div>
-                                  <p className="text-sm font-medium text-gray-600">Success Rate</p>
-                                  <p className="text-2xl font-bold text-gray-900">
+                                  <p className="text-sm font-medium text-gray-400">Success Rate</p>
+                                  <p className="text-2xl font-bold text-gray-100">
                                     {monitoring.performance_metrics.success_rate.toFixed(1)}%
                                   </p>
                                 </div>
@@ -409,8 +409,8 @@ export function DeploymentPage() {
                             <CardContent className="p-4">
                               <div className="flex items-center justify-between">
                                 <div>
-                                  <p className="text-sm font-medium text-gray-600">Error Count</p>
-                                  <p className="text-2xl font-bold text-gray-900">
+                                  <p className="text-sm font-medium text-gray-400">Error Count</p>
+                                  <p className="text-2xl font-bold text-gray-100">
                                     {monitoring.performance_metrics.error_count}
                                   </p>
                                 </div>
@@ -465,17 +465,17 @@ export function DeploymentPage() {
                                     <div className="flex justify-between items-start">
                                       <div>
                                         <div className="font-medium">{alert.message}</div>
-                                        <div className="text-sm text-gray-600">
+                                        <div className="text-sm text-gray-400">
                                           {new Date(alert.triggered_at).toLocaleString()}
                                         </div>
                                       </div>
                                       <Badge
                                         className={
                                           alert.severity === 'critical'
-                                            ? 'bg-red-100 text-red-800'
+                                            ? 'bg-red-900/50 text-red-300'
                                             : alert.severity === 'high'
-                                            ? 'bg-orange-100 text-orange-800'
-                                            : 'bg-yellow-100 text-yellow-800'
+                                            ? 'bg-orange-900/50 text-orange-300'
+                                            : 'bg-yellow-900/50 text-yellow-300'
                                         }
                                       >
                                         {alert.severity}
@@ -504,26 +504,26 @@ export function DeploymentPage() {
                               key={log.id}
                               className={`p-3 rounded border-l-4 ${
                                 log.level === 'error'
-                                  ? 'border-red-500 bg-red-50'
+                                  ? 'border-red-500 bg-red-900/30'
                                   : log.level === 'warning'
-                                  ? 'border-yellow-500 bg-yellow-50'
-                                  : 'border-blue-500 bg-blue-50'
+                                  ? 'border-yellow-500 bg-yellow-900/30'
+                                  : 'border-blue-500 bg-blue-900/30'
                               }`}
                             >
                               <div className="flex justify-between items-start">
                                 <div className="flex-1">
                                   <div className="font-medium">{log.message}</div>
-                                  <div className="text-sm text-gray-600 mt-1">
+                                  <div className="text-sm text-gray-400 mt-1">
                                     {new Date(log.timestamp).toLocaleString()}
                                   </div>
                                 </div>
                                 <Badge
                                   className={
                                     log.level === 'error'
-                                      ? 'bg-red-100 text-red-800'
+                                      ? 'bg-red-900/50 text-red-300'
                                       : log.level === 'warning'
-                                      ? 'bg-yellow-100 text-yellow-800'
-                                      : 'bg-blue-100 text-blue-800'
+                                      ? 'bg-yellow-900/50 text-yellow-300'
+                                      : 'bg-blue-900/50 text-blue-300'
                                   }
                                 >
                                   {log.level}
@@ -532,7 +532,7 @@ export function DeploymentPage() {
                             </div>
                           ))}
                           {selectedDeployment.deployment_logs.length === 0 && (
-                            <div className="text-center py-8 text-gray-500">
+                            <div className="text-center py-8 text-gray-400">
                               No logs available
                             </div>
                           )}
@@ -550,8 +550,8 @@ export function DeploymentPage() {
                       <CardContent>
                         <div className="space-y-4">
                           <div>
-                            <label className="text-sm font-medium text-gray-500">Auto Scaling</label>
-                            <div className="mt-1 p-3 bg-gray-50 rounded border">
+                            <label className="text-sm font-medium text-gray-400">Auto Scaling</label>
+                            <div className="mt-1 p-3 bg-gray-800 rounded border">
                               <div className="grid grid-cols-2 gap-4 text-sm">
                                 <div>
                                   <span className="font-medium">Enabled:</span>{' '}
@@ -574,8 +574,8 @@ export function DeploymentPage() {
                           </div>
 
                           <div>
-                            <label className="text-sm font-medium text-gray-500">Configuration</label>
-                            <div className="mt-1 p-3 bg-gray-50 rounded border">
+                            <label className="text-sm font-medium text-gray-400">Configuration</label>
+                            <div className="mt-1 p-3 bg-gray-800 rounded border">
                               <pre className="text-sm overflow-x-auto">
                                 {JSON.stringify(selectedDeployment.configuration, null, 2)}
                               </pre>
@@ -589,7 +589,7 @@ export function DeploymentPage() {
               ) : (
                 <Card>
                   <CardContent className="flex items-center justify-center h-64">
-                    <div className="text-center text-gray-500">
+                    <div className="text-center text-gray-400">
                       <Server className="h-12 w-12 mx-auto mb-4 text-gray-400" />
                       <p>Select a deployment to view details</p>
                     </div>

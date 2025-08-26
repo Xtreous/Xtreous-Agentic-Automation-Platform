@@ -48,9 +48,9 @@ export default function IntegrationsPage() {
 
   const getStatusColor = (status: string) => {
     switch (status) {
-      case 'active': return 'bg-green-100 text-green-800';
-      case 'inactive': return 'bg-gray-100 text-gray-800';
-      default: return 'bg-gray-100 text-gray-800';
+      case 'active': return 'bg-green-900/50 text-green-300';
+      case 'inactive': return 'bg-gray-700 text-gray-200';
+      default: return 'bg-gray-700 text-gray-200';
     }
   };
 
@@ -100,14 +100,14 @@ export default function IntegrationsPage() {
   ];
 
   return (
-    <div className="min-h-screen bg-gray-50 pt-24 pb-8">
+    <div className="min-h-screen bg-gray-900 pt-24 pb-8">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         {/* Header */}
         <div className="mb-8">
           <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
             <div>
-              <h1 className="text-3xl font-bold text-gray-900">Integrations</h1>
-              <p className="text-gray-600 mt-2">
+              <h1 className="text-3xl font-bold text-gray-100">Integrations</h1>
+              <p className="text-gray-400 mt-2">
                 Connect your AI agents with external services and tools
               </p>
             </div>
@@ -134,7 +134,7 @@ export default function IntegrationsPage() {
         {/* Active Integrations */}
         {filteredIntegrations.length > 0 && (
           <div className="mb-12">
-            <h2 className="text-xl font-semibold text-gray-900 mb-4">Active Integrations</h2>
+            <h2 className="text-xl font-semibold text-gray-100 mb-4">Active Integrations</h2>
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
               {filteredIntegrations.map((integration) => {
                 const Icon = getIntegrationIcon(integration.type);
@@ -143,7 +143,7 @@ export default function IntegrationsPage() {
                     <CardHeader>
                       <div className="flex items-start justify-between">
                         <div className="flex items-center space-x-3">
-                          <Icon className="h-8 w-8 text-blue-600" />
+                          <Icon className="h-8 w-8 text-blue-400" />
                           <div>
                             <CardTitle className="text-lg">{integration.name}</CardTitle>
                             <CardDescription className="capitalize">
@@ -164,7 +164,7 @@ export default function IntegrationsPage() {
                     <CardContent>
                       <div className="space-y-3">
                         <div className="flex justify-between items-center">
-                          <span className="text-sm text-gray-500">Connected</span>
+                          <span className="text-sm text-gray-400">Connected</span>
                           <span className="text-sm font-medium">
                             {new Date(integration.created_at).toLocaleDateString()}
                           </span>
@@ -189,7 +189,7 @@ export default function IntegrationsPage() {
 
         {/* Available Integrations */}
         <div>
-          <h2 className="text-xl font-semibold text-gray-900 mb-4">Available Integrations</h2>
+          <h2 className="text-xl font-semibold text-gray-100 mb-4">Available Integrations</h2>
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
             {availableIntegrations.map((integration) => {
               const isConnected = filteredIntegrations.some(
@@ -200,7 +200,7 @@ export default function IntegrationsPage() {
                 <Card key={integration.type} className="hover:shadow-lg transition-shadow">
                   <CardHeader>
                     <div className="flex items-center space-x-3">
-                      <integration.icon className="h-8 w-8 text-blue-600" />
+                      <integration.icon className="h-8 w-8 text-blue-400" />
                       <div>
                         <CardTitle className="text-lg">{integration.name}</CardTitle>
                         <CardDescription>{integration.category}</CardDescription>
@@ -208,7 +208,7 @@ export default function IntegrationsPage() {
                     </div>
                   </CardHeader>
                   <CardContent>
-                    <p className="text-gray-600 mb-4">
+                    <p className="text-gray-400 mb-4">
                       {integration.description}
                     </p>
                     
@@ -240,8 +240,8 @@ export default function IntegrationsPage() {
         {filteredIntegrations.length === 0 && !isLoading && (
           <div className="text-center py-12">
             <Settings className="h-12 w-12 text-gray-400 mx-auto mb-4" />
-            <h3 className="text-lg font-medium text-gray-900 mb-2">No integrations found</h3>
-            <p className="text-gray-600 mb-4">
+            <h3 className="text-lg font-medium text-gray-100 mb-2">No integrations found</h3>
+            <p className="text-gray-400 mb-4">
               Connect your first integration to start automating workflows.
             </p>
             <Button onClick={() => setIsCreateDialogOpen(true)}>

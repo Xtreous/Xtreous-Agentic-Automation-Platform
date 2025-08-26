@@ -41,28 +41,28 @@ export default function DashboardPage() {
       value: activeAgents.toString(),
       description: "AI agents currently running",
       icon: Bot,
-      color: "text-blue-600"
+      color: "text-blue-400"
     },
     {
       title: "Active Workflows",
       value: activeWorkflows.toString(),
       description: "Automated processes in progress",
       icon: Workflow,
-      color: "text-green-600"
+      color: "text-green-400"
     },
     {
       title: "Tasks Completed",
       value: totalTasks.toLocaleString(),
       description: "Total tasks processed",
       icon: CheckCircle,
-      color: "text-purple-600"
+      color: "text-purple-400"
     },
     {
       title: "Average Accuracy",
       value: `${(avgAccuracy * 100).toFixed(1)}%`,
       description: "AI performance metric",
       icon: Target,
-      color: "text-orange-600"
+      color: "text-orange-400"
     }
   ];
 
@@ -73,7 +73,7 @@ export default function DashboardPage() {
       message: "New Construction Takeoff Agent created",
       time: "2 minutes ago",
       icon: Bot,
-      color: "text-blue-600"
+      color: "text-blue-400"
     },
     {
       id: 2,
@@ -81,7 +81,7 @@ export default function DashboardPage() {
       message: "Customer Support Workflow completed successfully",
       time: "5 minutes ago",
       icon: CheckCircle,
-      color: "text-green-600"
+      color: "text-green-400"
     },
     {
       id: 3,
@@ -89,7 +89,7 @@ export default function DashboardPage() {
       message: "Finance Agent accuracy improved to 97.2%",
       time: "12 minutes ago",
       icon: TrendingUp,
-      color: "text-purple-600"
+      color: "text-purple-400"
     },
     {
       id: 4,
@@ -97,17 +97,17 @@ export default function DashboardPage() {
       message: "Sales Proposal Workflow initiated",
       time: "18 minutes ago",
       icon: Workflow,
-      color: "text-orange-600"
+      color: "text-orange-400"
     }
   ];
 
   return (
-    <div className="min-h-screen bg-gray-50 pt-24 pb-8">
+    <div className="min-h-screen bg-gray-900 pt-24 pb-8">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         {/* Header */}
         <div className="mb-8">
-          <h1 className="text-3xl font-bold text-gray-900">Dashboard</h1>
-          <p className="text-gray-600 mt-2">
+          <h1 className="text-3xl font-bold text-gray-100">Dashboard</h1>
+          <p className="text-gray-400 mt-2">
             Monitor your AI agents and workflow performance
           </p>
         </div>
@@ -117,14 +117,14 @@ export default function DashboardPage() {
           {stats.map((stat, index) => (
             <Card key={index}>
               <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-                <CardTitle className="text-sm font-medium text-gray-600">
+                <CardTitle className="text-sm font-medium text-gray-400">
                   {stat.title}
                 </CardTitle>
                 <stat.icon className={`h-4 w-4 ${stat.color}`} />
               </CardHeader>
               <CardContent>
                 <div className="text-2xl font-bold">{stat.value}</div>
-                <p className="text-xs text-gray-600 mt-1">
+                <p className="text-xs text-gray-400 mt-1">
                   {stat.description}
                 </p>
               </CardContent>
@@ -151,8 +151,8 @@ export default function DashboardPage() {
                     <div key={activity.id} className="flex items-start space-x-3">
                       <activity.icon className={`h-5 w-5 mt-0.5 ${activity.color}`} />
                       <div className="flex-1 min-w-0">
-                        <p className="text-sm text-gray-900">{activity.message}</p>
-                        <p className="text-xs text-gray-500">{activity.time}</p>
+                        <p className="text-sm text-gray-100">{activity.message}</p>
+                        <p className="text-xs text-gray-400">{activity.time}</p>
                       </div>
                     </div>
                   ))}
@@ -203,29 +203,29 @@ export default function DashboardPage() {
               </CardHeader>
               <CardContent className="space-y-3">
                 <div className="flex items-center justify-between">
-                  <span className="text-sm text-gray-600">AI Processing</span>
-                  <Badge className="bg-green-100 text-green-800">
+                  <span className="text-sm text-gray-400">AI Processing</span>
+                  <Badge className="bg-green-900/50 text-green-300">
                     <CheckCircle className="h-3 w-3 mr-1" />
                     Operational
                   </Badge>
                 </div>
                 <div className="flex items-center justify-between">
-                  <span className="text-sm text-gray-600">Integrations</span>
-                  <Badge className="bg-green-100 text-green-800">
+                  <span className="text-sm text-gray-400">Integrations</span>
+                  <Badge className="bg-green-900/50 text-green-300">
                     <CheckCircle className="h-3 w-3 mr-1" />
                     Healthy
                   </Badge>
                 </div>
                 <div className="flex items-center justify-between">
-                  <span className="text-sm text-gray-600">Data Pipeline</span>
-                  <Badge className="bg-yellow-100 text-yellow-800">
+                  <span className="text-sm text-gray-400">Data Pipeline</span>
+                  <Badge className="bg-yellow-900/50 text-yellow-300">
                     <Clock className="h-3 w-3 mr-1" />
                     Maintenance
                   </Badge>
                 </div>
                 <div className="flex items-center justify-between">
-                  <span className="text-sm text-gray-600">Security</span>
-                  <Badge className="bg-green-100 text-green-800">
+                  <span className="text-sm text-gray-400">Security</span>
+                  <Badge className="bg-green-900/50 text-green-300">
                     <CheckCircle className="h-3 w-3 mr-1" />
                     Secure
                   </Badge>
@@ -253,19 +253,19 @@ export default function DashboardPage() {
                   .sort((a, b) => b.accuracy_rate - a.accuracy_rate)
                   .slice(0, 5)
                   .map((agent) => (
-                    <div key={agent.id} className="flex items-center justify-between p-3 bg-gray-50 rounded-lg">
+                    <div key={agent.id} className="flex items-center justify-between p-3 bg-gray-800 rounded-lg">
                       <div className="flex items-center space-x-3">
-                        <Bot className="h-8 w-8 text-blue-600" />
+                        <Bot className="h-8 w-8 text-blue-400" />
                         <div>
-                          <p className="font-medium text-gray-900">{agent.name}</p>
-                          <p className="text-sm text-gray-600 capitalize">{agent.industry}</p>
+                          <p className="font-medium text-gray-100">{agent.name}</p>
+                          <p className="text-sm text-gray-400 capitalize">{agent.industry}</p>
                         </div>
                       </div>
                       <div className="text-right">
-                        <p className="font-medium text-gray-900">
+                        <p className="font-medium text-gray-100">
                           {(agent.accuracy_rate * 100).toFixed(1)}%
                         </p>
-                        <p className="text-sm text-gray-600">
+                        <p className="text-sm text-gray-400">
                           {agent.tasks_completed.toLocaleString()} tasks
                         </p>
                       </div>

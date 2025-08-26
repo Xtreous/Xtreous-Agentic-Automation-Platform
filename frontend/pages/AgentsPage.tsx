@@ -42,10 +42,10 @@ export default function AgentsPage() {
 
   const getStatusColor = (status: string) => {
     switch (status) {
-      case 'active': return 'bg-green-100 text-green-800';
-      case 'training': return 'bg-yellow-100 text-yellow-800';
-      case 'inactive': return 'bg-gray-100 text-gray-800';
-      default: return 'bg-gray-100 text-gray-800';
+      case 'active': return 'bg-green-900/50 text-green-300';
+      case 'training': return 'bg-yellow-900/50 text-yellow-300';
+      case 'inactive': return 'bg-gray-700 text-gray-200';
+      default: return 'bg-gray-700 text-gray-200';
     }
   };
 
@@ -73,14 +73,14 @@ export default function AgentsPage() {
   };
 
   return (
-    <div className="min-h-screen bg-gray-50 pt-24 pb-8">
+    <div className="min-h-screen bg-gray-900 pt-24 pb-8">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         {/* Header */}
         <div className="mb-8">
           <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
             <div>
-              <h1 className="text-3xl font-bold text-gray-900">AI Agents</h1>
-              <p className="text-gray-600 mt-2">
+              <h1 className="text-3xl font-bold text-gray-100">AI Agents</h1>
+              <p className="text-gray-400 mt-2">
                 Manage and monitor your self-learning AI agents
               </p>
             </div>
@@ -160,7 +160,7 @@ export default function AgentsPage() {
               <SelectItem value="tasks_completed">Tasks Completed</SelectItem>
             </SelectContent>
           </Select>
-          <div className="text-sm text-gray-600 flex items-center">
+          <div className="text-sm text-gray-400 flex items-center">
             {agentsData && (
               <span>
                 {agentsData.total} total • Page {agentsData.page} of {agentsData.total_pages}
@@ -177,13 +177,13 @@ export default function AgentsPage() {
                 {[...Array(6)].map((_, i) => (
                   <Card key={i} className="animate-pulse">
                     <CardHeader>
-                      <div className="h-6 bg-gray-200 rounded w-3/4"></div>
-                      <div className="h-4 bg-gray-200 rounded w-1/2"></div>
+                      <div className="h-6 bg-gray-700 rounded w-3/4"></div>
+                      <div className="h-4 bg-gray-700 rounded w-1/2"></div>
                     </CardHeader>
                     <CardContent>
                       <div className="space-y-2">
-                        <div className="h-4 bg-gray-200 rounded"></div>
-                        <div className="h-4 bg-gray-200 rounded w-2/3"></div>
+                        <div className="h-4 bg-gray-700 rounded"></div>
+                        <div className="h-4 bg-gray-700 rounded w-2/3"></div>
                       </div>
                     </CardContent>
                   </Card>
@@ -205,7 +205,7 @@ export default function AgentsPage() {
                         <CardHeader>
                           <div className="flex items-start justify-between">
                             <div className="flex items-center space-x-3">
-                              <Bot className="h-8 w-8 text-blue-600" />
+                              <Bot className="h-8 w-8 text-blue-400" />
                               <div>
                                 <CardTitle className="text-lg">{agent.name}</CardTitle>
                                 <CardDescription className="capitalize">
@@ -220,15 +220,15 @@ export default function AgentsPage() {
                           </div>
                         </CardHeader>
                         <CardContent>
-                          <p className="text-gray-600 mb-4 line-clamp-2">
+                          <p className="text-gray-400 mb-4 line-clamp-2">
                             {agent.description || 'No description available'}
                           </p>
                           
                           <div className="space-y-3">
                             <div className="flex justify-between items-center">
-                              <span className="text-sm text-gray-500">Accuracy Rate</span>
+                              <span className="text-sm text-gray-400">Accuracy Rate</span>
                               <div className="flex items-center space-x-2">
-                                <div className="w-20 bg-gray-200 rounded-full h-2">
+                                <div className="w-20 bg-gray-700 rounded-full h-2">
                                   <div 
                                     className="bg-green-500 h-2 rounded-full" 
                                     style={{ width: `${agent.accuracy_rate * 100}%` }}
@@ -241,7 +241,7 @@ export default function AgentsPage() {
                             </div>
                             
                             <div className="flex justify-between items-center">
-                              <span className="text-sm text-gray-500">Tasks Completed</span>
+                              <span className="text-sm text-gray-400">Tasks Completed</span>
                               <span className="text-sm font-medium flex items-center">
                                 <TrendingUp className="h-3 w-3 mr-1 text-green-500" />
                                 {agent.tasks_completed.toLocaleString()}
@@ -249,7 +249,7 @@ export default function AgentsPage() {
                             </div>
 
                             <div className="flex justify-between items-center">
-                              <span className="text-sm text-gray-500">Training Hours</span>
+                              <span className="text-sm text-gray-400">Training Hours</span>
                               <span className="text-sm font-medium flex items-center">
                                 <Brain className="h-3 w-3 mr-1 text-purple-500" />
                                 {agent.total_training_hours || 0}h
@@ -257,7 +257,7 @@ export default function AgentsPage() {
                             </div>
 
                             <div className="flex justify-between items-center">
-                              <span className="text-sm text-gray-500">Skill Points</span>
+                              <span className="text-sm text-gray-400">Skill Points</span>
                               <span className="text-sm font-medium flex items-center">
                                 <TrendingUp className="h-3 w-3 mr-1 text-blue-500" />
                                 {agent.skill_points || 0} pts
@@ -266,7 +266,7 @@ export default function AgentsPage() {
 
                             {agent.capabilities && agent.capabilities.length > 0 && (
                               <div className="text-sm">
-                                <span className="text-gray-500">Capabilities:</span>
+                                <span className="text-gray-400">Capabilities:</span>
                                 <div className="mt-1 flex flex-wrap gap-1">
                                   {agent.capabilities.slice(0, 3).map((capability, index) => (
                                     <Badge key={index} variant="outline" className="text-xs">
@@ -301,7 +301,7 @@ export default function AgentsPage() {
                 {/* Pagination */}
                 {agentsData && agentsData.total_pages > 1 && (
                   <div className="mt-8 flex items-center justify-between">
-                    <div className="text-sm text-gray-600">
+                    <div className="text-sm text-gray-400">
                       Showing {((agentsData.page - 1) * agentsData.per_page) + 1} to{' '}
                       {Math.min(agentsData.page * agentsData.per_page, agentsData.total)} of{' '}
                       {agentsData.total} agents
@@ -333,7 +333,7 @@ export default function AgentsPage() {
                         })}
                         {agentsData.total_pages > 5 && (
                           <>
-                            <span className="text-gray-500">...</span>
+                            <span className="text-gray-400">...</span>
                             <Button
                               variant={agentsData.total_pages === agentsData.page ? "default" : "outline"}
                               size="sm"
@@ -363,8 +363,8 @@ export default function AgentsPage() {
             {agentsData?.agents.length === 0 && !isLoading && (
               <div className="text-center py-12">
                 <Bot className="h-12 w-12 text-gray-400 mx-auto mb-4" />
-                <h3 className="text-lg font-medium text-gray-900 mb-2">No agents found</h3>
-                <p className="text-gray-600 mb-4">
+                <h3 className="text-lg font-medium text-gray-100 mb-2">No agents found</h3>
+                <p className="text-gray-400 mb-4">
                   {searchTerm || industryFilter || statusFilter || typeFilter
                     ? 'Try adjusting your filters to see more results.'
                     : 'Get started by creating your first AI agent.'}
@@ -394,7 +394,7 @@ export default function AgentsPage() {
                 </CardHeader>
                 <CardContent className="text-center py-8">
                   <Bot className="h-12 w-12 text-gray-400 mx-auto mb-4" />
-                  <p className="text-gray-500">
+                  <p className="text-gray-400">
                     Click on an agent to see their skills, training progress, and recommendations.
                   </p>
                 </CardContent>

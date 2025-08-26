@@ -43,11 +43,11 @@ export default function MarketplaceComparePage() {
 
   const getPricingColor = (model: string) => {
     switch (model) {
-      case 'free': return 'bg-green-100 text-green-800';
-      case 'subscription': return 'bg-blue-100 text-blue-800';
-      case 'usage_based': return 'bg-purple-100 text-purple-800';
-      case 'one_time': return 'bg-orange-100 text-orange-800';
-      default: return 'bg-gray-100 text-gray-800';
+      case 'free': return 'bg-green-900/50 text-green-300';
+      case 'subscription': return 'bg-blue-900/50 text-blue-300';
+      case 'usage_based': return 'bg-purple-900/50 text-purple-300';
+      case 'one_time': return 'bg-orange-900/50 text-orange-300';
+      default: return 'bg-gray-700 text-gray-200';
     }
   };
 
@@ -60,7 +60,7 @@ export default function MarketplaceComparePage() {
             ? 'text-yellow-400 fill-current'
             : i < rating
             ? 'text-yellow-400 fill-current opacity-50'
-            : 'text-gray-300'
+            : 'text-gray-500'
         }`}
       />
     ));
@@ -82,11 +82,11 @@ export default function MarketplaceComparePage() {
 
   if (agentIds.length < 2) {
     return (
-      <div className="min-h-screen bg-gray-50 pt-24 pb-8">
+      <div className="min-h-screen bg-gray-900 pt-24 pb-8">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="text-center py-12">
-            <h1 className="text-2xl font-bold text-gray-900 mb-4">Invalid Comparison</h1>
-            <p className="text-gray-600 mb-6">You need to select at least 2 agents to compare.</p>
+            <h1 className="text-2xl font-bold text-gray-100 mb-4">Invalid Comparison</h1>
+            <p className="text-gray-400 mb-6">You need to select at least 2 agents to compare.</p>
             <Button asChild>
               <Link to="/marketplace">Back to Marketplace</Link>
             </Button>
@@ -98,11 +98,11 @@ export default function MarketplaceComparePage() {
 
   if (isLoading) {
     return (
-      <div className="min-h-screen bg-gray-50 pt-24 pb-8">
+      <div className="min-h-screen bg-gray-900 pt-24 pb-8">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="animate-pulse space-y-8">
-            <div className="h-8 bg-gray-200 rounded w-1/4"></div>
-            <div className="h-96 bg-gray-200 rounded"></div>
+            <div className="h-8 bg-gray-700 rounded w-1/4"></div>
+            <div className="h-96 bg-gray-700 rounded"></div>
           </div>
         </div>
       </div>
@@ -111,10 +111,10 @@ export default function MarketplaceComparePage() {
 
   if (!comparison) {
     return (
-      <div className="min-h-screen bg-gray-50 pt-24 pb-8">
+      <div className="min-h-screen bg-gray-900 pt-24 pb-8">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="text-center py-12">
-            <h1 className="text-2xl font-bold text-gray-900 mb-4">Comparison not found</h1>
+            <h1 className="text-2xl font-bold text-gray-100 mb-4">Comparison not found</h1>
             <Button asChild>
               <Link to="/marketplace">Back to Marketplace</Link>
             </Button>
@@ -125,7 +125,7 @@ export default function MarketplaceComparePage() {
   }
 
   return (
-    <div className="min-h-screen bg-gray-50 pt-24 pb-8">
+    <div className="min-h-screen bg-gray-900 pt-24 pb-8">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         {/* Header */}
         <div className="mb-8">
@@ -135,8 +135,8 @@ export default function MarketplaceComparePage() {
               Back to Marketplace
             </Link>
           </Button>
-          <h1 className="text-3xl font-bold text-gray-900 mb-2">Compare Agents</h1>
-          <p className="text-gray-600">
+          <h1 className="text-3xl font-bold text-gray-100 mb-2">Compare Agents</h1>
+          <p className="text-gray-400">
             Side-by-side comparison of {comparison.agents.length} AI agents
           </p>
         </div>
@@ -159,7 +159,7 @@ export default function MarketplaceComparePage() {
                 </div>
                 <div className="flex items-center gap-2">
                   {renderStars(agent.rating)}
-                  <span className="text-sm text-gray-600">
+                  <span className="text-sm text-gray-400">
                     {agent.rating.toFixed(1)} ({agent.review_count})
                   </span>
                 </div>
@@ -170,13 +170,13 @@ export default function MarketplaceComparePage() {
                     <Badge className={getPricingColor(agent.pricing_model)}>
                       {formatPrice(agent)}
                     </Badge>
-                    <div className="flex items-center gap-1 text-sm text-gray-600">
+                    <div className="flex items-center gap-1 text-sm text-gray-400">
                       <Download className="h-3 w-3" />
                       {agent.downloads.toLocaleString()}
                     </div>
                   </div>
                   
-                  <p className="text-sm text-gray-600 line-clamp-3">
+                  <p className="text-sm text-gray-400 line-clamp-3">
                     {agent.description}
                   </p>
                   
@@ -207,11 +207,11 @@ export default function MarketplaceComparePage() {
               <table className="w-full">
                 <thead>
                   <tr className="border-b">
-                    <th className="text-left py-3 px-4 font-medium text-gray-900 w-48">
+                    <th className="text-left py-3 px-4 font-medium text-gray-100 w-48">
                       Feature
                     </th>
                     {comparison.agents.map((agent) => (
-                      <th key={agent.id} className="text-center py-3 px-4 font-medium text-gray-900 min-w-48">
+                      <th key={agent.id} className="text-center py-3 px-4 font-medium text-gray-100 min-w-48">
                         {agent.name}
                       </th>
                     ))}
@@ -219,8 +219,8 @@ export default function MarketplaceComparePage() {
                 </thead>
                 <tbody>
                   {comparison.comparison_matrix.map((row, index) => (
-                    <tr key={index} className={index % 2 === 0 ? 'bg-gray-50' : 'bg-white'}>
-                      <td className="py-3 px-4 font-medium text-gray-700">
+                    <tr key={index} className={index % 2 === 0 ? 'bg-gray-800' : 'bg-gray-900'}>
+                      <td className="py-3 px-4 font-medium text-gray-300">
                         {row.feature}
                       </td>
                       {row.values.map((value, valueIndex) => (
