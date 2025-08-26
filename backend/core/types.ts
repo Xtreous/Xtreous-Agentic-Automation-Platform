@@ -72,10 +72,7 @@ export interface WorkflowStep {
   id: string;
   name: string;
   type: "agent" | "integration" | "condition" | "delay";
-  config: {
-    conditionGroup?: ConditionGroup;
-    [key: string]: any;
-  };
+  config: Record<string, any>;
   order: number;
 }
 

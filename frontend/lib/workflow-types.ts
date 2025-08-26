@@ -15,10 +15,7 @@ export interface WorkflowNode {
   name: string;
   description?: string;
   position: { x: number; y: number };
-  config: {
-    conditionGroup?: ConditionGroup;
-    [key: string]: any;
-  };
+  config: Record<string, any>;
   connections: string[];
 }
 
