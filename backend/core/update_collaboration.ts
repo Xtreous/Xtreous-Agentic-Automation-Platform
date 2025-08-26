@@ -2,6 +2,7 @@ import { api, APIError } from "encore.dev/api";
 import { coreDB } from "./db";
 import type { AgentCollaboration } from "./types";
 import { getAuthData } from "~encore/auth";
+import { invalidateCollaborationListCache } from "./cache";
 
 export interface UpdateCollaborationRequest {
   id: number;
@@ -68,6 +69,9 @@ export const updateCollaboration = api<UpdateCollaborationRequest, AgentCollabor
     if (!collaboration) {
       throw APIError.internal("failed to update collaboration");
     }
+
+    // Invalidate cache
+    await invalidateCollaborationListCache();
 
     collaboration.shared_context = typeof collaboration.shared_context === 'string' 
       ? JSON.parse(collaboration.shared_context) 

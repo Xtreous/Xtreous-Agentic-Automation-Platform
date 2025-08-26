@@ -1,6 +1,7 @@
 import { api, APIError } from "encore.dev/api";
 import { coreDB } from "./db";
 import type { Task, TaskStatus, TaskPriority, TaskContext } from "./types";
+import { invalidateTaskListCache } from "./cache";
 
 export interface UpdateTaskRequest {
   id: number;
@@ -96,6 +97,9 @@ export const updateTask = api<UpdateTaskRequest, Task>(
         )
       `;
     }
+
+    // Invalidate cache
+    await invalidateTaskListCache();
 
     // Parse the context JSON
     updatedTask.context = typeof updatedTask.context === 'string' 

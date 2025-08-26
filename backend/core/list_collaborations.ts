@@ -1,8 +1,9 @@
 import { api } from "encore.dev/api";
 import { Query } from "encore.dev/api";
 import { coreDB } from "./db";
-import type { AgentCollaboration } from "./types";
+import type { AgentCollaboration, CollaborationMessage } from "./types";
 import { getAuthData } from "~encore/auth";
+import { getCached, setCached, CACHE_KEYS, CACHE_TTL } from "./cache";
 
 export interface ListCollaborationsRequest {
   status?: Query<string>;
@@ -23,6 +24,12 @@ export const listCollaborations = api<ListCollaborationsRequest, ListCollaborati
     const auth = getAuthData()!;
     const limit = req.limit || 50;
     const offset = req.offset || 0;
+
+    const cacheKey = CACHE_KEYS.COLLABORATIONS_LIST(JSON.stringify({ ...req, authId: auth.userID }));
+    const cached = await getCached<ListCollaborationsResponse>(cacheKey);
+    if (cached) {
+      return cached;
+    }
 
     let whereConditions: string[] = [];
     let params: any[] = [];
@@ -68,31 +75,47 @@ export const listCollaborations = api<ListCollaborationsRequest, ListCollaborati
 
     const collaborations = await coreDB.rawQueryAll<AgentCollaboration>(collaborationsQuery, ...params);
 
-    // Parse shared_context JSON and get communication logs for each collaboration
-    const parsedCollaborations = await Promise.all(
-      collaborations.map(async (collaboration) => {
-        const messages = await coreDB.queryAll`
-          SELECT * FROM collaboration_messages 
-          WHERE collaboration_id = ${collaboration.id}
-          ORDER BY timestamp ASC
-        `;
+    // Optimization: Fetch all messages for all collaborations in one query
+    const collaborationIds = collaborations.map(c => c.id);
+    let allMessages: CollaborationMessage[] = [];
+    if (collaborationIds.length > 0) {
+      allMessages = await coreDB.rawQueryAll<CollaborationMessage>`
+        SELECT * FROM collaboration_messages 
+        WHERE collaboration_id = ANY(${collaborationIds})
+        ORDER BY timestamp ASC
+      `;
+    }
 
-        return {
-          ...collaboration,
-          shared_context: typeof collaboration.shared_context === 'string' 
-            ? JSON.parse(collaboration.shared_context) 
-            : collaboration.shared_context,
-          communication_log: messages.map(msg => ({
-            ...msg,
-            metadata: typeof msg.metadata === 'string' ? JSON.parse(msg.metadata) : msg.metadata
-          }))
-        };
-      })
-    );
+    const messagesByCollaborationId = allMessages.reduce((acc, msg) => {
+      if (!acc[msg.collaboration_id]) {
+        acc[msg.collaboration_id] = [];
+      }
+      acc[msg.collaboration_id].push(msg);
+      return acc;
+    }, {} as Record<number, CollaborationMessage[]>);
 
-    return {
+    // Parse shared_context JSON and attach communication logs
+    const parsedCollaborations = collaborations.map(collaboration => {
+      const messages = messagesByCollaborationId[collaboration.id] || [];
+      return {
+        ...collaboration,
+        shared_context: typeof collaboration.shared_context === 'string' 
+          ? JSON.parse(collaboration.shared_context) 
+          : collaboration.shared_context,
+        communication_log: messages.map(msg => ({
+          ...msg,
+          metadata: typeof msg.metadata === 'string' ? JSON.parse(msg.metadata) : msg.metadata
+        }))
+      };
+    });
+
+    const response = {
       collaborations: parsedCollaborations,
       total
     };
+
+    await setCached(cacheKey, response, CACHE_TTL.COLLABORATIONS_LIST);
+
+    return response;
   }
 );

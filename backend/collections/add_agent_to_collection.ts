@@ -1,6 +1,7 @@
 import { api, APIError } from "encore.dev/api";
 import { getAuthData } from "~encore/auth";
 import { coreDB } from "../core/db";
+import { invalidateCollectionListCache } from "../core/cache";
 
 export interface AddAgentToCollectionRequest {
   collectionId: number;
@@ -54,6 +55,9 @@ export const addAgentToCollection = api<AddAgentToCollectionRequest, AddAgentToC
       INSERT INTO collection_agents (collection_id, agent_id)
       VALUES (${req.collectionId}, ${req.agentId})
     `;
+
+    // Invalidate cache
+    await invalidateCollectionListCache();
 
     return {
       message: "Agent added to collection successfully"

@@ -34,6 +34,10 @@ export const CACHE_KEYS = {
   AGENT_WORKLOAD: (agentId: number) => `agent:${agentId}:workload`,
   SKILL_RECOMMENDATIONS: (agentId: number, status?: string) => `agent:${agentId}:recommendations:${status || 'all'}`,
   TRAINING_SESSIONS: (agentId: number, status?: string) => `agent:${agentId}:training:${status || 'all'}`,
+  COLLECTIONS_LIST: (filters: string) => `collections:list:${filters}`,
+  TASKS_LIST: (filters: string) => `tasks:list:${filters}`,
+  TRAINING_MODULES_LIST: (filters: string) => `training_modules:list:${filters}`,
+  COLLABORATIONS_LIST: (filters: string) => `collaborations:list:${filters}`,
 } as const;
 
 // Cache TTL (Time To Live) in seconds
@@ -45,6 +49,10 @@ export const CACHE_TTL = {
   AGENT_WORKLOAD: 30, // 30 seconds
   SKILL_RECOMMENDATIONS: 300, // 5 minutes
   TRAINING_SESSIONS: 300, // 5 minutes
+  COLLECTIONS_LIST: 60,
+  TASKS_LIST: 60,
+  TRAINING_MODULES_LIST: 300,
+  COLLABORATIONS_LIST: 60,
 } as const;
 
 // Cache helper functions
@@ -104,4 +112,20 @@ export async function invalidateAgentCache(agentId: number): Promise<void> {
 
 export async function invalidateAgentListCache(): Promise<void> {
   await deleteCachedPattern('agents:list:*');
+}
+
+export async function invalidateCollectionListCache(): Promise<void> {
+  await deleteCachedPattern('collections:list:*');
+}
+
+export async function invalidateTaskListCache(): Promise<void> {
+  await deleteCachedPattern('tasks:list:*');
+}
+
+export async function invalidateTrainingModuleListCache(): Promise<void> {
+  await deleteCachedPattern('training_modules:list:*');
+}
+
+export async function invalidateCollaborationListCache(): Promise<void> {
+  await deleteCachedPattern('collaborations:list:*');
 }

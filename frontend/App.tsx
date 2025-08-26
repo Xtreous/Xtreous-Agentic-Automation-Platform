@@ -27,6 +27,8 @@ import PlatformPage from './pages/PlatformPage';
 import ResourcesPage from './pages/ResourcesPage';
 import AboutPage from './pages/AboutPage';
 import TemplatesPage from './pages/TemplatesPage';
+import MonitoringPage from './pages/MonitoringPage';
+import UnauthorizedPage from './pages/UnauthorizedPage';
 
 const queryClient = new QueryClient({
   defaultOptions: {
@@ -109,6 +111,12 @@ function AppInner() {
                 <SubscriptionPage />
               </ProtectedRoute>
             } />
+            <Route path="/monitoring" element={
+              <ProtectedRoute requiredRole="super_admin">
+                <MonitoringPage />
+              </ProtectedRoute>
+            } />
+            <Route path="/unauthorized" element={<UnauthorizedPage />} />
           </Routes>
         </main>
         <Footer />

@@ -1,6 +1,7 @@
 import { api, APIError } from "encore.dev/api";
 import { coreDB } from "./db";
 import type { CollaborationMessage } from "./types";
+import { invalidateCollaborationListCache } from "./cache";
 
 export interface SendCollaborationMessageRequest {
   collaboration_id: number;
@@ -52,6 +53,9 @@ export const sendCollaborationMessage = api<SendCollaborationMessageRequest, Col
     if (!message) {
       throw APIError.internal("failed to send message");
     }
+
+    // Invalidate cache
+    await invalidateCollaborationListCache();
 
     // Parse the metadata JSON
     message.metadata = typeof message.metadata === 'string' 

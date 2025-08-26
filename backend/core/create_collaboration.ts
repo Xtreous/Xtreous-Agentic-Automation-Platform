@@ -2,6 +2,7 @@ import { api, APIError } from "encore.dev/api";
 import { coreDB } from "./db";
 import type { AgentCollaboration } from "./types";
 import { getAuthData } from "~encore/auth";
+import { invalidateCollaborationListCache } from "./cache";
 
 export interface CreateCollaborationRequest {
   name: string;
@@ -54,6 +55,9 @@ export const createCollaboration = api<CreateCollaborationRequest, AgentCollabor
     if (!collaboration) {
       throw APIError.internal("failed to create collaboration");
     }
+
+    // Invalidate cache
+    await invalidateCollaborationListCache();
 
     // Parse the shared_context JSON
     collaboration.shared_context = typeof collaboration.shared_context === 'string' 

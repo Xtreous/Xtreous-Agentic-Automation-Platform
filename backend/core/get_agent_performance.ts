@@ -1,6 +1,7 @@
 import { api } from "encore.dev/api";
 import { coreDB } from "./db";
 import type { AgentPerformance } from "./types";
+import { getCached, setCached, CACHE_KEYS, CACHE_TTL } from "./cache";
 
 interface GetAgentPerformanceParams {
   agent_id: number;
@@ -21,6 +22,12 @@ export const getAgentPerformance = api<GetAgentPerformanceParams, GetAgentPerfor
   { expose: true, method: "GET", path: "/agents/:agent_id/performance" },
   async (params) => {
     const days = params.days || 30;
+    const cacheKey = CACHE_KEYS.AGENT_PERFORMANCE(params.agent_id, days);
+
+    const cached = await getCached<GetAgentPerformanceResponse>(cacheKey);
+    if (cached) {
+      return cached;
+    }
     
     const performance = await coreDB.queryAll<AgentPerformance>`
       SELECT * FROM agent_performance 
@@ -42,7 +49,7 @@ export const getAgentPerformance = api<GetAgentPerformanceParams, GetAgentPerfor
     const successfulExecutions = executions.filter(e => e.status === 'completed').length;
     const successRate = executions.length > 0 ? successfulExecutions / executions.length : 0;
     
-    return {
+    const response = {
       performance,
       summary: {
         avg_accuracy: agent?.accuracy_rate || 0,
@@ -50,5 +57,9 @@ export const getAgentPerformance = api<GetAgentPerformanceParams, GetAgentPerfor
         success_rate: successRate
       }
     };
+
+    await setCached(cacheKey, response, CACHE_TTL.AGENT_PERFORMANCE);
+    
+    return response;
   }
 );

@@ -2,6 +2,7 @@ import { api } from "encore.dev/api";
 import { Query } from "encore.dev/api";
 import { coreDB } from "./db";
 import type { TrainingModule } from "./types";
+import { getCached, setCached, CACHE_KEYS, CACHE_TTL } from "./cache";
 
 export interface ListTrainingModulesRequest {
   skill_category?: Query<string>;
@@ -33,6 +34,12 @@ export const listTrainingModules = api<ListTrainingModulesRequest, ListTrainingM
     const page = Math.floor(offset / limit) + 1;
     const sortBy = req.sort_by || 'created_at';
     const sortOrder = req.sort_order || 'desc';
+
+    const cacheKey = CACHE_KEYS.TRAINING_MODULES_LIST(JSON.stringify(req));
+    const cached = await getCached<ListTrainingModulesResponse>(cacheKey);
+    if (cached) {
+      return cached;
+    }
 
     // Build WHERE conditions
     let whereConditions: string[] = ['1=1'];
@@ -109,7 +116,7 @@ export const listTrainingModules = api<ListTrainingModulesRequest, ListTrainingM
     const hasNext = page < totalPages;
     const hasPrev = page > 1;
 
-    return {
+    const response = {
       modules: parsedModules,
       total,
       page,
@@ -118,5 +125,9 @@ export const listTrainingModules = api<ListTrainingModulesRequest, ListTrainingM
       has_next: hasNext,
       has_prev: hasPrev
     };
+
+    await setCached(cacheKey, response, CACHE_TTL.TRAINING_MODULES_LIST);
+
+    return response;
   }
 );

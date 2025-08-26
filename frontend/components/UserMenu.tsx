@@ -11,7 +11,7 @@ import {
 } from '@/components/ui/dropdown-menu';
 import { Avatar, AvatarFallback } from '@/components/ui/avatar';
 import { Badge } from '@/components/ui/badge';
-import { User, Settings, CreditCard, LogOut, Shield, LayoutDashboard } from 'lucide-react';
+import { User, Settings, CreditCard, LogOut, Shield, LayoutDashboard, Activity } from 'lucide-react';
 import { useAuth } from './AuthProvider';
 
 export default function UserMenu() {
@@ -114,6 +114,14 @@ export default function UserMenu() {
                 <span>Admin Panel</span>
               </Link>
             </DropdownMenuItem>
+            {user.role === 'super_admin' && (
+              <DropdownMenuItem asChild>
+                <Link to="/monitoring" className="flex items-center">
+                  <Activity className="mr-2 h-4 w-4" />
+                  <span>Monitoring</span>
+                </Link>
+              </DropdownMenuItem>
+            )}
           </>
         )}
         <DropdownMenuSeparator />

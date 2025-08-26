@@ -2,6 +2,7 @@ import { api } from "encore.dev/api";
 import { Query } from "encore.dev/api";
 import { coreDB } from "./db";
 import type { Task, TaskStatus, TaskPriority } from "./types";
+import { getCached, setCached, CACHE_KEYS, CACHE_TTL } from "./cache";
 
 export interface ListTasksRequest {
   status?: Query<TaskStatus>;
@@ -35,6 +36,12 @@ export const listTasks = api<ListTasksRequest, ListTasksResponse>(
     const page = Math.floor(offset / limit) + 1;
     const sortBy = req.sort_by || 'created_at';
     const sortOrder = req.sort_order || 'desc';
+
+    const cacheKey = CACHE_KEYS.TASKS_LIST(JSON.stringify(req));
+    const cached = await getCached<ListTasksResponse>(cacheKey);
+    if (cached) {
+      return cached;
+    }
 
     // Build WHERE conditions
     let whereConditions: string[] = ['1=1'];
@@ -115,7 +122,7 @@ export const listTasks = api<ListTasksRequest, ListTasksResponse>(
     const hasNext = page < totalPages;
     const hasPrev = page > 1;
 
-    return {
+    const response = {
       tasks: parsedTasks,
       total,
       page,
@@ -124,5 +131,9 @@ export const listTasks = api<ListTasksRequest, ListTasksResponse>(
       has_next: hasNext,
       has_prev: hasPrev
     };
+
+    await setCached(cacheKey, response, CACHE_TTL.TASKS_LIST);
+
+    return response;
   }
 );

@@ -3,6 +3,7 @@ import { Query } from "encore.dev/api";
 import { getAuthData } from "~encore/auth";
 import { coreDB } from "../core/db";
 import type { AgentCollection } from "./create_collection";
+import { getCached, setCached, CACHE_KEYS, CACHE_TTL } from "../core/cache";
 
 export interface ListCollectionsRequest {
   userId?: Query<string>;
@@ -23,6 +24,12 @@ export const listCollections = api<ListCollectionsRequest, ListCollectionsRespon
     const auth = getAuthData()!;
     const limit = req.limit || 50;
     const offset = req.offset || 0;
+
+    const cacheKey = CACHE_KEYS.COLLECTIONS_LIST(JSON.stringify({ ...req, authId: auth.userID }));
+    const cached = await getCached<ListCollectionsResponse>(cacheKey);
+    if (cached) {
+      return cached;
+    }
 
     let whereConditions: string[] = [];
     let params: any[] = [];
@@ -91,7 +98,7 @@ export const listCollections = api<ListCollectionsRequest, ListCollectionsRespon
       agent_count: number;
     }>(collectionsQuery, ...params);
 
-    return {
+    const response = {
       collections: collections.map(collection => ({
         id: collection.id.toString(),
         name: collection.name,
@@ -104,5 +111,9 @@ export const listCollections = api<ListCollectionsRequest, ListCollectionsRespon
       })),
       total
     };
+
+    await setCached(cacheKey, response, CACHE_TTL.COLLECTIONS_LIST);
+
+    return response;
   }
 );

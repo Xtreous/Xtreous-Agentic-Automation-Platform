@@ -1,6 +1,7 @@
 import { api, APIError } from "encore.dev/api";
 import { getAuthData } from "~encore/auth";
 import { coreDB } from "../core/db";
+import { invalidateCollectionListCache } from "../core/cache";
 
 export interface CreateCollectionRequest {
   name: string;
@@ -66,6 +67,9 @@ export const createCollection = api<CreateCollectionRequest, AgentCollection>(
         `;
       }
     }
+
+    // Invalidate cache
+    await invalidateCollectionListCache();
 
     return {
       id: collection.id.toString(),

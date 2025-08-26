@@ -1,6 +1,7 @@
 import { api } from "encore.dev/api";
 import { coreDB } from "./db";
 import type { TrainingModule } from "./types";
+import { invalidateTrainingModuleListCache } from "./cache";
 
 export interface CreateTrainingModuleRequest {
   name: string;
@@ -36,6 +37,9 @@ export const createTrainingModule = api<CreateTrainingModuleRequest, TrainingMod
     if (!module) {
       throw new Error("Failed to create training module");
     }
+
+    // Invalidate cache
+    await invalidateTrainingModuleListCache();
 
     // Parse JSON fields
     module.prerequisites = typeof module.prerequisites === 'string' 

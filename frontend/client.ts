@@ -38,6 +38,7 @@ export class Client {
     public readonly core: core.ServiceClient
     public readonly deployment: deployment.ServiceClient
     public readonly marketplace: marketplace.ServiceClient
+    public readonly monitoring: monitoring.ServiceClient
     public readonly subscriptions: subscriptions.ServiceClient
     public readonly templates: templates.ServiceClient
     public readonly users: users.ServiceClient
@@ -60,6 +61,7 @@ export class Client {
         this.core = new core.ServiceClient(base)
         this.deployment = new deployment.ServiceClient(base)
         this.marketplace = new marketplace.ServiceClient(base)
+        this.monitoring = new monitoring.ServiceClient(base)
         this.subscriptions = new subscriptions.ServiceClient(base)
         this.templates = new templates.ServiceClient(base)
         this.users = new users.ServiceClient(base)
@@ -959,6 +961,32 @@ export namespace marketplace {
             // Now make the actual call to the API
             const resp = await this.baseClient.callTypedAPI(`/marketplace/agents`, {query, method: "GET", body: undefined})
             return JSON.parse(await resp.text(), dateReviver) as ResponseType<typeof api_marketplace_list_marketplace_agents_listMarketplaceAgents>
+        }
+    }
+}
+
+/**
+ * Import the endpoint handlers to derive the types for the client.
+ */
+import { getDatabaseStats as api_monitoring_get_database_stats_getDatabaseStats } from "~backend/monitoring/get_database_stats";
+
+export namespace monitoring {
+
+    export class ServiceClient {
+        private baseClient: BaseClient
+
+        constructor(baseClient: BaseClient) {
+            this.baseClient = baseClient
+            this.getDatabaseStats = this.getDatabaseStats.bind(this)
+        }
+
+        /**
+         * Retrieves database performance statistics. (Admin only)
+         */
+        public async getDatabaseStats(): Promise<ResponseType<typeof api_monitoring_get_database_stats_getDatabaseStats>> {
+            // Now make the actual call to the API
+            const resp = await this.baseClient.callTypedAPI(`/monitoring/db-stats`, {method: "GET", body: undefined})
+            return JSON.parse(await resp.text(), dateReviver) as ResponseType<typeof api_monitoring_get_database_stats_getDatabaseStats>
         }
     }
 }

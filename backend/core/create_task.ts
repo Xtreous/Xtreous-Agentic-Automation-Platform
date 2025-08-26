@@ -1,6 +1,7 @@
 import { api, APIError } from "encore.dev/api";
 import { coreDB } from "./db";
 import type { Task, TaskContext, TaskPriority } from "./types";
+import { invalidateTaskListCache } from "./cache";
 
 export interface CreateTaskRequest {
   title: string;
@@ -74,6 +75,9 @@ export const createTask = api<CreateTaskRequest, Task>(
         ${JSON.stringify({ priority: req.priority, assigned_agent_id: req.assigned_agent_id })}
       )
     `;
+
+    // Invalidate cache
+    await invalidateTaskListCache();
 
     // Parse the context JSON
     task.context = typeof task.context === 'string' ? JSON.parse(task.context) : task.context;
