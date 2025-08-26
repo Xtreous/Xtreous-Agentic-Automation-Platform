@@ -1,6 +1,7 @@
 import { api, APIError } from "encore.dev/api";
 import { coreDB } from "./db";
 import type { AgentCollaboration } from "./types";
+import { getAuthData } from "~encore/auth";
 
 export interface CreateCollaborationRequest {
   name: string;
@@ -12,8 +13,10 @@ export interface CreateCollaborationRequest {
 
 // Creates a new agent collaboration.
 export const createCollaboration = api<CreateCollaborationRequest, AgentCollaboration>(
-  { expose: true, method: "POST", path: "/collaborations" },
+  { expose: true, method: "POST", path: "/collaborations", auth: true },
   async (req) => {
+    const auth = getAuthData()!;
+
     if (req.participating_agents.length < 2) {
       throw APIError.invalidArgument("collaboration must have at least 2 participating agents");
     }
@@ -37,11 +40,13 @@ export const createCollaboration = api<CreateCollaborationRequest, AgentCollabor
 
     const collaboration = await coreDB.queryRow<AgentCollaboration>`
       INSERT INTO agent_collaborations (
-        name, description, participating_agents, coordinator_agent_id, shared_context
+        name, description, participating_agents, coordinator_agent_id, shared_context,
+        user_id, organization_id
       )
       VALUES (
         ${req.name}, ${req.description}, ${req.participating_agents}, 
-        ${req.coordinator_agent_id}, ${JSON.stringify(req.shared_context || {})}
+        ${req.coordinator_agent_id}, ${JSON.stringify(req.shared_context || {})},
+        ${parseInt(auth.userID)}, ${auth.organizationId ? parseInt(auth.organizationId) : null}
       )
       RETURNING *
     `;

@@ -16,17 +16,16 @@ import {
   Star
 } from 'lucide-react';
 import { useAuth } from '../components/AuthProvider';
-import backend from '~backend/client';
+import { useBackend } from '../hooks/useBackend';
 
 export default function SubscriptionPage() {
-  const { user, token } = useAuth();
+  const { user } = useAuth();
+  const backend = useBackend();
 
   const { data: subscription, isLoading } = useQuery({
     queryKey: ['subscription'],
-    queryFn: () => backend.subscriptions.getSubscription().with({
-      auth: { authorization: `Bearer ${token}` }
-    }),
-    enabled: !!token
+    queryFn: () => backend.subscriptions.getSubscription(),
+    enabled: !!user
   });
 
   const plans = [

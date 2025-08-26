@@ -2,6 +2,7 @@ import { api } from "encore.dev/api";
 import { Query } from "encore.dev/api";
 import { coreDB } from "./db";
 import type { AgentCollaboration } from "./types";
+import { getAuthData } from "~encore/auth";
 
 export interface ListCollaborationsRequest {
   status?: Query<string>;
@@ -17,14 +18,25 @@ export interface ListCollaborationsResponse {
 
 // Retrieves a list of agent collaborations with optional filtering.
 export const listCollaborations = api<ListCollaborationsRequest, ListCollaborationsResponse>(
-  { expose: true, method: "GET", path: "/collaborations" },
+  { expose: true, method: "GET", path: "/collaborations", auth: true },
   async (req) => {
+    const auth = getAuthData()!;
     const limit = req.limit || 50;
     const offset = req.offset || 0;
 
     let whereConditions: string[] = [];
     let params: any[] = [];
     let paramIndex = 1;
+
+    if (auth.organizationId) {
+      whereConditions.push(`ac.organization_id = $${paramIndex}`);
+      params.push(parseInt(auth.organizationId));
+      paramIndex++;
+    } else {
+      whereConditions.push(`ac.user_id = $${paramIndex}`);
+      params.push(parseInt(auth.userID));
+      paramIndex++;
+    }
 
     if (req.status) {
       whereConditions.push(`status = $${paramIndex}`);
@@ -41,13 +53,13 @@ export const listCollaborations = api<ListCollaborationsRequest, ListCollaborati
     const whereClause = whereConditions.length > 0 ? `WHERE ${whereConditions.join(' AND ')}` : '';
 
     // Get total count
-    const countQuery = `SELECT COUNT(*) as count FROM agent_collaborations ${whereClause}`;
+    const countQuery = `SELECT COUNT(*) as count FROM agent_collaborations ac ${whereClause}`;
     const countResult = await coreDB.rawQueryRow<{ count: number }>(countQuery, ...params);
     const total = countResult?.count || 0;
 
     // Get collaborations
     const collaborationsQuery = `
-      SELECT * FROM agent_collaborations 
+      SELECT * FROM agent_collaborations ac
       ${whereClause}
       ORDER BY created_at DESC 
       LIMIT $${paramIndex} OFFSET $${paramIndex + 1}

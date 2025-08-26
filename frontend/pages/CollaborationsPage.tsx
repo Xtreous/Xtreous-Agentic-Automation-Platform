@@ -18,15 +18,17 @@ import {
 import backend from '~backend/client';
 import type { AgentCollaboration } from '~backend/core/types';
 import CreateCollaborationDialog from '../components/CreateCollaborationDialog';
+import { useBackend } from '../hooks/useBackend';
 
 export default function CollaborationsPage() {
   const [searchTerm, setSearchTerm] = useState('');
   const [statusFilter, setStatusFilter] = useState('');
   const [isCreateDialogOpen, setIsCreateDialogOpen] = useState(false);
+  const authedBackend = useBackend();
 
   const { data: collaborationsData, isLoading, refetch } = useQuery({
     queryKey: ['collaborations', statusFilter],
-    queryFn: () => backend.core.listCollaborations({
+    queryFn: () => authedBackend.core.listCollaborations({
       status: statusFilter || undefined,
       limit: 50
     })
@@ -34,7 +36,7 @@ export default function CollaborationsPage() {
 
   const { data: agentsData } = useQuery({
     queryKey: ['agents'],
-    queryFn: () => backend.core.listAgents({ limit: 100 })
+    queryFn: () => authedBackend.core.listAgents({ limit: 100 })
   });
 
   const filteredCollaborations = collaborationsData?.collaborations.filter(collaboration =>

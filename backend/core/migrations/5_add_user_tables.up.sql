@@ -101,8 +101,14 @@ ALTER TABLE tasks ADD COLUMN user_id BIGINT REFERENCES users(id);
 -- Add user_id to workflows table to track ownership
 ALTER TABLE workflows ADD COLUMN user_id BIGINT REFERENCES users(id);
 
+-- Add user_id and organization_id to collaborations table
+ALTER TABLE agent_collaborations ADD COLUMN user_id BIGINT REFERENCES users(id);
+ALTER TABLE agent_collaborations ADD COLUMN organization_id BIGINT REFERENCES organizations(id);
+
 -- Create indexes for new foreign keys
 CREATE INDEX idx_agents_user ON agents(user_id);
 CREATE INDEX idx_agents_organization ON agents(organization_id);
 CREATE INDEX idx_tasks_user ON tasks(user_id);
 CREATE INDEX idx_workflows_user ON workflows(user_id);
+CREATE INDEX idx_collaborations_user ON agent_collaborations(user_id);
+CREATE INDEX idx_collaborations_organization ON agent_collaborations(organization_id);

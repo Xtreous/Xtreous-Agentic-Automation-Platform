@@ -11,6 +11,7 @@ import { Badge } from '@/components/ui/badge';
 import { useToast } from '@/components/ui/use-toast';
 import { Crown, X } from 'lucide-react';
 import backend from '~backend/client';
+import { useBackend } from '../hooks/useBackend';
 
 interface CreateCollaborationDialogProps {
   open: boolean;
@@ -25,10 +26,11 @@ export default function CreateCollaborationDialog({ open, onOpenChange, onSucces
   const [coordinatorAgentId, setCoordinatorAgentId] = useState<number | undefined>(undefined);
   const [isSubmitting, setIsSubmitting] = useState(false);
   const { toast } = useToast();
+  const authedBackend = useBackend();
 
   const { data: agentsData } = useQuery({
     queryKey: ['agents'],
-    queryFn: () => backend.core.listAgents({ limit: 100 })
+    queryFn: () => authedBackend.core.listAgents({ limit: 100 })
   });
 
   const handleAgentToggle = (agentId: number, checked: boolean) => {
@@ -49,7 +51,7 @@ export default function CreateCollaborationDialog({ open, onOpenChange, onSucces
 
     setIsSubmitting(true);
     try {
-      await backend.core.createCollaboration({
+      await authedBackend.core.createCollaboration({
         name: name.trim(),
         description: description.trim() || undefined,
         participating_agents: selectedAgents,
