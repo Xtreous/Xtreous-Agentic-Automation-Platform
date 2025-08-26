@@ -39,6 +39,7 @@ export class Client {
     public readonly deployment: deployment.ServiceClient
     public readonly marketplace: marketplace.ServiceClient
     public readonly subscriptions: subscriptions.ServiceClient
+    public readonly templates: templates.ServiceClient
     public readonly users: users.ServiceClient
     private readonly options: ClientOptions
     private readonly target: string
@@ -60,6 +61,7 @@ export class Client {
         this.deployment = new deployment.ServiceClient(base)
         this.marketplace = new marketplace.ServiceClient(base)
         this.subscriptions = new subscriptions.ServiceClient(base)
+        this.templates = new templates.ServiceClient(base)
         this.users = new users.ServiceClient(base)
     }
 
@@ -907,6 +909,50 @@ export namespace subscriptions {
             // Now make the actual call to the API
             const resp = await this.baseClient.callTypedAPI(`/subscriptions/upgrade`, {method: "POST", body: JSON.stringify(params)})
             return JSON.parse(await resp.text(), dateReviver) as ResponseType<typeof api_subscriptions_upgrade_subscription_upgradeSubscription>
+        }
+    }
+}
+
+/**
+ * Import the endpoint handlers to derive the types for the client.
+ */
+import { get as api_templates_get_get } from "~backend/templates/get";
+import { list as api_templates_list_list } from "~backend/templates/list";
+
+export namespace templates {
+
+    export class ServiceClient {
+        private baseClient: BaseClient
+
+        constructor(baseClient: BaseClient) {
+            this.baseClient = baseClient
+            this.get = this.get.bind(this)
+            this.list = this.list.bind(this)
+        }
+
+        /**
+         * Retrieves a specific agent template.
+         */
+        public async get(params: { id: number }): Promise<ResponseType<typeof api_templates_get_get>> {
+            // Now make the actual call to the API
+            const resp = await this.baseClient.callTypedAPI(`/templates/${encodeURIComponent(params.id)}`, {method: "GET", body: undefined})
+            return JSON.parse(await resp.text(), dateReviver) as ResponseType<typeof api_templates_get_get>
+        }
+
+        /**
+         * Lists available agent templates.
+         */
+        public async list(params: RequestType<typeof api_templates_list_list>): Promise<ResponseType<typeof api_templates_list_list>> {
+            // Convert our params into the objects we need for the request
+            const query = makeRecord<string, string | string[]>({
+                industry: params.industry,
+                search:   params.search,
+                type:     params.type,
+            })
+
+            // Now make the actual call to the API
+            const resp = await this.baseClient.callTypedAPI(`/templates`, {query, method: "GET", body: undefined})
+            return JSON.parse(await resp.text(), dateReviver) as ResponseType<typeof api_templates_list_list>
         }
     }
 }

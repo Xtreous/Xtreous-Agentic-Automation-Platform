@@ -26,6 +26,7 @@ import ProtectedRoute from './components/ProtectedRoute';
 import PlatformPage from './pages/PlatformPage';
 import ResourcesPage from './pages/ResourcesPage';
 import AboutPage from './pages/AboutPage';
+import TemplatesPage from './pages/TemplatesPage';
 
 const queryClient = new QueryClient({
   defaultOptions: {
@@ -61,6 +62,11 @@ function AppInner() {
             <Route path="/agents" element={
               <ProtectedRoute>
                 <AgentsPage />
+              </ProtectedRoute>
+            } />
+            <Route path="/templates" element={
+              <ProtectedRoute>
+                <TemplatesPage />
               </ProtectedRoute>
             } />
             <Route path="/tasks" element={

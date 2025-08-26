@@ -14,6 +14,7 @@ export default function Header() {
   const navigation = [
     { name: 'Platform', href: '/platform' },
     { name: 'AI Agents', href: '/agents' },
+    { name: 'Templates', href: '/templates' },
     { name: 'Solutions', href: '/solutions' },
     { name: 'Resources', href: '/resources' },
     { name: 'About', href: '/about' },
