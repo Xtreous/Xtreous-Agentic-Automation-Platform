@@ -9,21 +9,33 @@ export interface ListTrainingModulesRequest {
   status?: Query<string>;
   limit?: Query<number>;
   offset?: Query<number>;
+  sort_by?: Query<'name' | 'created_at' | 'difficulty_level' | 'estimated_duration'>;
+  sort_order?: Query<'asc' | 'desc'>;
+  search?: Query<string>;
 }
 
 export interface ListTrainingModulesResponse {
   modules: TrainingModule[];
   total: number;
+  page: number;
+  per_page: number;
+  total_pages: number;
+  has_next: boolean;
+  has_prev: boolean;
 }
 
-// Retrieves a list of training modules with optional filtering.
+// Retrieves a list of training modules with optional filtering, pagination, and sorting.
 export const listTrainingModules = api<ListTrainingModulesRequest, ListTrainingModulesResponse>(
   { expose: true, method: "GET", path: "/training/modules" },
   async (req) => {
-    const limit = req.limit || 50;
+    const limit = Math.min(req.limit || 50, 100);
     const offset = req.offset || 0;
+    const page = Math.floor(offset / limit) + 1;
+    const sortBy = req.sort_by || 'created_at';
+    const sortOrder = req.sort_order || 'desc';
 
-    let whereConditions: string[] = [];
+    // Build WHERE conditions
+    let whereConditions: string[] = ['1=1'];
     let params: any[] = [];
     let paramIndex = 1;
 
@@ -45,18 +57,33 @@ export const listTrainingModules = api<ListTrainingModulesRequest, ListTrainingM
       paramIndex++;
     }
 
-    const whereClause = whereConditions.length > 0 ? `WHERE ${whereConditions.join(' AND ')}` : '';
+    if (req.search) {
+      whereConditions.push(`(name ILIKE $${paramIndex} OR description ILIKE $${paramIndex} OR target_skill ILIKE $${paramIndex})`);
+      params.push(`%${req.search}%`);
+      paramIndex++;
+    }
+
+    const whereClause = `WHERE ${whereConditions.join(' AND ')}`;
+
+    // Validate sort column
+    const validSortColumns = ['name', 'created_at', 'difficulty_level', 'estimated_duration'];
+    const sortColumn = validSortColumns.includes(sortBy) ? sortBy : 'created_at';
+    const sortDirection = sortOrder === 'asc' ? 'ASC' : 'DESC';
 
     // Get total count
     const countQuery = `SELECT COUNT(*) as count FROM training_modules ${whereClause}`;
     const countResult = await coreDB.rawQueryRow<{ count: number }>(countQuery, ...params);
     const total = countResult?.count || 0;
 
-    // Get modules
+    // Get modules with optimized query
     const modulesQuery = `
-      SELECT * FROM training_modules 
+      SELECT 
+        id, name, description, skill_category, target_skill, difficulty_level,
+        prerequisites, content, estimated_duration, success_criteria,
+        created_by, status, created_at, updated_at
+      FROM training_modules 
       ${whereClause}
-      ORDER BY created_at DESC 
+      ORDER BY ${sortColumn} ${sortDirection}
       LIMIT $${paramIndex} OFFSET $${paramIndex + 1}
     `;
     params.push(limit, offset);
@@ -77,9 +104,19 @@ export const listTrainingModules = api<ListTrainingModulesRequest, ListTrainingM
         : module.success_criteria
     }));
 
+    // Calculate pagination metadata
+    const totalPages = Math.ceil(total / limit);
+    const hasNext = page < totalPages;
+    const hasPrev = page > 1;
+
     return {
       modules: parsedModules,
-      total
+      total,
+      page,
+      per_page: limit,
+      total_pages: totalPages,
+      has_next: hasNext,
+      has_prev: hasPrev
     };
   }
 );

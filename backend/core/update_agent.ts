@@ -1,5 +1,6 @@
 import { api, APIError } from "encore.dev/api";
 import { coreDB } from "./db";
+import { invalidateAgentCache, invalidateAgentListCache } from "./cache";
 import type { Agent } from "./types";
 
 interface UpdateAgentParams {
@@ -38,6 +39,12 @@ export const updateAgent = api<UpdateAgentParams & UpdateAgentRequest, Agent>(
       WHERE id = ${id}
       RETURNING *
     `;
+    
+    // Invalidate caches
+    await Promise.all([
+      invalidateAgentCache(id),
+      invalidateAgentListCache()
+    ]);
     
     return agent!;
   }

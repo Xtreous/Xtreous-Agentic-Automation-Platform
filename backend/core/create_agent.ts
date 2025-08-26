@@ -1,5 +1,6 @@
 import { api } from "encore.dev/api";
 import { coreDB } from "./db";
+import { invalidateAgentListCache } from "./cache";
 import type { Agent } from "./types";
 
 interface CreateAgentRequest {
@@ -19,6 +20,9 @@ export const createAgent = api<CreateAgentRequest, Agent>(
       VALUES (${req.name}, ${req.description || null}, ${req.type}, ${req.industry}, ${JSON.stringify(req.configuration || {})})
       RETURNING *
     `;
+    
+    // Invalidate agent list cache
+    await invalidateAgentListCache();
     
     return agent!;
   }

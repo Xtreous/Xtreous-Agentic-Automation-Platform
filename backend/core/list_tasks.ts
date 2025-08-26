@@ -11,21 +11,33 @@ export interface ListTasksRequest {
   parent_task_id?: Query<number>;
   limit?: Query<number>;
   offset?: Query<number>;
+  sort_by?: Query<'title' | 'created_at' | 'priority' | 'status'>;
+  sort_order?: Query<'asc' | 'desc'>;
+  search?: Query<string>;
 }
 
 export interface ListTasksResponse {
   tasks: Task[];
   total: number;
+  page: number;
+  per_page: number;
+  total_pages: number;
+  has_next: boolean;
+  has_prev: boolean;
 }
 
-// Retrieves a list of tasks with optional filtering.
+// Retrieves a list of tasks with optional filtering, pagination, and sorting.
 export const listTasks = api<ListTasksRequest, ListTasksResponse>(
   { expose: true, method: "GET", path: "/tasks" },
   async (req) => {
-    const limit = req.limit || 50;
+    const limit = Math.min(req.limit || 50, 100);
     const offset = req.offset || 0;
+    const page = Math.floor(offset / limit) + 1;
+    const sortBy = req.sort_by || 'created_at';
+    const sortOrder = req.sort_order || 'desc';
 
-    let whereConditions: string[] = [];
+    // Build WHERE conditions
+    let whereConditions: string[] = ['1=1'];
     let params: any[] = [];
     let paramIndex = 1;
 
@@ -59,18 +71,33 @@ export const listTasks = api<ListTasksRequest, ListTasksResponse>(
       paramIndex++;
     }
 
-    const whereClause = whereConditions.length > 0 ? `WHERE ${whereConditions.join(' AND ')}` : '';
+    if (req.search) {
+      whereConditions.push(`(title ILIKE $${paramIndex} OR description ILIKE $${paramIndex})`);
+      params.push(`%${req.search}%`);
+      paramIndex++;
+    }
+
+    const whereClause = `WHERE ${whereConditions.join(' AND ')}`;
+
+    // Validate sort column
+    const validSortColumns = ['title', 'created_at', 'priority', 'status'];
+    const sortColumn = validSortColumns.includes(sortBy) ? sortBy : 'created_at';
+    const sortDirection = sortOrder === 'asc' ? 'ASC' : 'DESC';
 
     // Get total count
     const countQuery = `SELECT COUNT(*) as count FROM tasks ${whereClause}`;
     const countResult = await coreDB.rawQueryRow<{ count: number }>(countQuery, ...params);
     const total = countResult?.count || 0;
 
-    // Get tasks
+    // Get tasks with optimized query
     const tasksQuery = `
-      SELECT * FROM tasks 
+      SELECT 
+        id, title, description, status, priority, assigned_agent_id,
+        workflow_id, parent_task_id, context, created_at, updated_at,
+        completed_at, estimated_duration, actual_duration
+      FROM tasks 
       ${whereClause}
-      ORDER BY created_at DESC 
+      ORDER BY ${sortColumn} ${sortDirection}
       LIMIT $${paramIndex} OFFSET $${paramIndex + 1}
     `;
     params.push(limit, offset);
@@ -83,9 +110,19 @@ export const listTasks = api<ListTasksRequest, ListTasksResponse>(
       context: typeof task.context === 'string' ? JSON.parse(task.context) : task.context
     }));
 
+    // Calculate pagination metadata
+    const totalPages = Math.ceil(total / limit);
+    const hasNext = page < totalPages;
+    const hasPrev = page > 1;
+
     return {
       tasks: parsedTasks,
-      total
+      total,
+      page,
+      per_page: limit,
+      total_pages: totalPages,
+      has_next: hasNext,
+      has_prev: hasPrev
     };
   }
 );

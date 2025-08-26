@@ -1,17 +1,24 @@
 import { api, APIError } from "encore.dev/api";
 import { Query } from "encore.dev/api";
 import { coreDB } from "./db";
+import { getCached, setCached, CACHE_KEYS, CACHE_TTL } from "./cache";
 import type { AgentTrainingSession } from "./types";
 
 export interface GetTrainingSessionsRequest {
   agent_id: number;
   status?: Query<string>;
   limit?: Query<number>;
+  offset?: Query<number>;
 }
 
 export interface GetTrainingSessionsResponse {
   sessions: AgentTrainingSession[];
   total: number;
+  page: number;
+  per_page: number;
+  total_pages: number;
+  has_next: boolean;
+  has_prev: boolean;
   stats: {
     completed: number;
     in_progress: number;
@@ -20,10 +27,22 @@ export interface GetTrainingSessionsResponse {
   };
 }
 
-// Retrieves training sessions for a specific agent.
+// Retrieves training sessions for a specific agent with pagination and caching.
 export const getTrainingSessions = api<GetTrainingSessionsRequest, GetTrainingSessionsResponse>(
   { expose: true, method: "GET", path: "/agents/:agent_id/training-sessions" },
   async (req) => {
+    const limit = Math.min(req.limit || 50, 100);
+    const offset = req.offset || 0;
+    const page = Math.floor(offset / limit) + 1;
+
+    const cacheKey = CACHE_KEYS.TRAINING_SESSIONS(req.agent_id, req.status);
+    
+    // Try to get from cache first
+    const cached = await getCached<GetTrainingSessionsResponse>(cacheKey);
+    if (cached) {
+      return cached;
+    }
+
     // Validate agent exists
     const agent = await coreDB.queryRow`
       SELECT id FROM agents WHERE id = ${req.agent_id}
@@ -32,42 +51,51 @@ export const getTrainingSessions = api<GetTrainingSessionsRequest, GetTrainingSe
       throw APIError.notFound("agent not found");
     }
 
-    const limit = req.limit || 50;
-    let whereConditions = [`agent_id = ${req.agent_id}`];
+    // Build WHERE conditions
+    let whereConditions = [`ats.agent_id = ${req.agent_id}`];
+    let params: any[] = [];
+    let paramIndex = 1;
     
     if (req.status) {
-      whereConditions.push(`status = '${req.status}'`);
+      whereConditions.push(`ats.status = $${paramIndex}`);
+      params.push(req.status);
+      paramIndex++;
     }
 
     const whereClause = `WHERE ${whereConditions.join(' AND ')}`;
 
     // Get total count
-    const countQuery = `SELECT COUNT(*) as count FROM agent_training_sessions ${whereClause}`;
-    const countResult = await coreDB.rawQueryRow<{ count: number }>(countQuery);
+    const countQuery = `SELECT COUNT(*) as count FROM agent_training_sessions ats ${whereClause}`;
+    const countResult = await coreDB.rawQueryRow<{ count: number }>(countQuery, ...params);
     const total = countResult?.count || 0;
 
-    // Get sessions with training module details
+    // Get sessions with training module details using optimized query
     const sessionsQuery = `
-      SELECT ats.*, tm.name as module_name, tm.target_skill, tm.skill_category
+      SELECT 
+        ats.id, ats.agent_id, ats.training_module_id, ats.status,
+        ats.progress_percentage, ats.score, ats.feedback,
+        ats.started_at, ats.completed_at, ats.duration_minutes,
+        tm.name as module_name, tm.target_skill, tm.skill_category
       FROM agent_training_sessions ats
-      JOIN training_modules tm ON ats.training_module_id = tm.id
+      INNER JOIN training_modules tm ON ats.training_module_id = tm.id
       ${whereClause}
       ORDER BY ats.started_at DESC 
-      LIMIT ${limit}
+      LIMIT $${paramIndex} OFFSET $${paramIndex + 1}
     `;
+    params.push(limit, offset);
 
     const sessions = await coreDB.rawQueryAll<AgentTrainingSession & {
       module_name: string;
       target_skill: string;
       skill_category: string;
-    }>(sessionsQuery);
+    }>(sessionsQuery, ...params);
 
-    // Get stats
+    // Get stats with optimized query
     const statsQuery = `
       SELECT 
         status,
         COUNT(*) as count,
-        AVG(score) as avg_score
+        AVG(CASE WHEN score IS NOT NULL THEN score END) as avg_score
       FROM agent_training_sessions 
       WHERE agent_id = ${req.agent_id}
       GROUP BY status
@@ -89,7 +117,9 @@ export const getTrainingSessions = api<GetTrainingSessionsRequest, GetTrainingSe
     let scoredSessions = 0;
 
     statsResults.forEach(stat => {
-      stats[stat.status as keyof typeof stats] = stat.count;
+      if (stat.status in stats) {
+        stats[stat.status as keyof typeof stats] = stat.count;
+      }
       if (stat.avg_score && stat.status === 'completed') {
         totalScores += stat.avg_score * stat.count;
         scoredSessions += stat.count;
@@ -106,10 +136,25 @@ export const getTrainingSessions = api<GetTrainingSessionsRequest, GetTrainingSe
         : session.feedback
     }));
 
-    return {
+    // Calculate pagination metadata
+    const totalPages = Math.ceil(total / limit);
+    const hasNext = page < totalPages;
+    const hasPrev = page > 1;
+
+    const response: GetTrainingSessionsResponse = {
       sessions: parsedSessions,
       total,
+      page,
+      per_page: limit,
+      total_pages: totalPages,
+      has_next: hasNext,
+      has_prev: hasPrev,
       stats
     };
+
+    // Cache the response
+    await setCached(cacheKey, response, CACHE_TTL.TRAINING_SESSIONS);
+
+    return response;
   }
 );

@@ -5,7 +5,7 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/com
 import { Badge } from '@/components/ui/badge';
 import { Input } from '@/components/ui/input';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
-import { Bot, Plus, Search, TrendingUp, Clock, CheckCircle, Users, Activity, Brain } from 'lucide-react';
+import { Bot, Plus, Search, TrendingUp, Clock, CheckCircle, Users, Activity, Brain, ChevronLeft, ChevronRight } from 'lucide-react';
 import backend from '~backend/client';
 import type { Agent } from '~backend/core/types';
 import { useState } from 'react';
@@ -16,22 +16,29 @@ export default function AgentsPage() {
   const [searchTerm, setSearchTerm] = useState('');
   const [industryFilter, setIndustryFilter] = useState('');
   const [statusFilter, setStatusFilter] = useState('');
+  const [typeFilter, setTypeFilter] = useState('');
+  const [sortBy, setSortBy] = useState<'name' | 'created_at' | 'accuracy_rate' | 'tasks_completed'>('created_at');
+  const [sortOrder, setSortOrder] = useState<'asc' | 'desc'>('desc');
+  const [currentPage, setCurrentPage] = useState(1);
   const [isCreateDialogOpen, setIsCreateDialogOpen] = useState(false);
   const [selectedAgentId, setSelectedAgentId] = useState<number | null>(null);
 
+  const pageSize = 12;
+  const offset = (currentPage - 1) * pageSize;
+
   const { data: agentsData, isLoading, refetch } = useQuery({
-    queryKey: ['agents', industryFilter, statusFilter],
+    queryKey: ['agents', industryFilter, statusFilter, typeFilter, searchTerm, sortBy, sortOrder, currentPage],
     queryFn: () => backend.core.listAgents({
       industry: industryFilter || undefined,
       status: statusFilter || undefined,
-      limit: 50
+      type: typeFilter || undefined,
+      search: searchTerm || undefined,
+      sort_by: sortBy,
+      sort_order: sortOrder,
+      limit: pageSize,
+      offset: offset
     })
   });
-
-  const filteredAgents = agentsData?.agents.filter(agent =>
-    agent.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
-    agent.description?.toLowerCase().includes(searchTerm.toLowerCase())
-  ) || [];
 
   const getStatusColor = (status: string) => {
     switch (status) {
@@ -48,6 +55,21 @@ export default function AgentsPage() {
       case 'training': return Clock;
       default: return Bot;
     }
+  };
+
+  const handlePageChange = (page: number) => {
+    setCurrentPage(page);
+    setSelectedAgentId(null); // Clear selection when changing pages
+  };
+
+  const handleSortChange = (newSortBy: string) => {
+    if (sortBy === newSortBy) {
+      setSortOrder(sortOrder === 'asc' ? 'desc' : 'asc');
+    } else {
+      setSortBy(newSortBy as any);
+      setSortOrder('desc');
+    }
+    setCurrentPage(1);
   };
 
   return (
@@ -69,18 +91,24 @@ export default function AgentsPage() {
           </div>
         </div>
 
-        {/* Filters */}
-        <div className="mb-8 grid grid-cols-1 md:grid-cols-4 gap-4">
+        {/* Filters and Search */}
+        <div className="mb-8 grid grid-cols-1 md:grid-cols-6 gap-4">
           <div className="relative">
             <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 h-4 w-4" />
             <Input
               placeholder="Search agents..."
               value={searchTerm}
-              onChange={(e) => setSearchTerm(e.target.value)}
+              onChange={(e) => {
+                setSearchTerm(e.target.value);
+                setCurrentPage(1);
+              }}
               className="pl-10"
             />
           </div>
-          <Select value={industryFilter} onValueChange={setIndustryFilter}>
+          <Select value={industryFilter} onValueChange={(value) => {
+            setIndustryFilter(value);
+            setCurrentPage(1);
+          }}>
             <SelectTrigger>
               <SelectValue placeholder="All Industries" />
             </SelectTrigger>
@@ -92,7 +120,10 @@ export default function AgentsPage() {
               <SelectItem value="sales">Sales</SelectItem>
             </SelectContent>
           </Select>
-          <Select value={statusFilter} onValueChange={setStatusFilter}>
+          <Select value={statusFilter} onValueChange={(value) => {
+            setStatusFilter(value);
+            setCurrentPage(1);
+          }}>
             <SelectTrigger>
               <SelectValue placeholder="All Statuses" />
             </SelectTrigger>
@@ -103,8 +134,38 @@ export default function AgentsPage() {
               <SelectItem value="inactive">Inactive</SelectItem>
             </SelectContent>
           </Select>
+          <Select value={typeFilter} onValueChange={(value) => {
+            setTypeFilter(value);
+            setCurrentPage(1);
+          }}>
+            <SelectTrigger>
+              <SelectValue placeholder="All Types" />
+            </SelectTrigger>
+            <SelectContent>
+              <SelectItem value="">All Types</SelectItem>
+              <SelectItem value="conversational">Conversational</SelectItem>
+              <SelectItem value="analytical">Analytical</SelectItem>
+              <SelectItem value="automation">Automation</SelectItem>
+              <SelectItem value="coordinator">Coordinator</SelectItem>
+            </SelectContent>
+          </Select>
+          <Select value={sortBy} onValueChange={handleSortChange}>
+            <SelectTrigger>
+              <SelectValue placeholder="Sort by" />
+            </SelectTrigger>
+            <SelectContent>
+              <SelectItem value="created_at">Created Date</SelectItem>
+              <SelectItem value="name">Name</SelectItem>
+              <SelectItem value="accuracy_rate">Accuracy</SelectItem>
+              <SelectItem value="tasks_completed">Tasks Completed</SelectItem>
+            </SelectContent>
+          </Select>
           <div className="text-sm text-gray-600 flex items-center">
-            Total: {agentsData?.total || 0} agents
+            {agentsData && (
+              <span>
+                {agentsData.total} total • Page {agentsData.page} of {agentsData.total_pages}
+              </span>
+            )}
           </div>
         </div>
 
@@ -129,120 +190,182 @@ export default function AgentsPage() {
                 ))}
               </div>
             ) : (
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                {filteredAgents.map((agent) => {
-                  const StatusIcon = getStatusIcon(agent.status);
-                  return (
-                    <Card 
-                      key={agent.id} 
-                      className={`hover:shadow-lg transition-shadow cursor-pointer ${
-                        selectedAgentId === agent.id ? 'ring-2 ring-blue-500' : ''
-                      }`}
-                      onClick={() => setSelectedAgentId(agent.id)}
-                    >
-                      <CardHeader>
-                        <div className="flex items-start justify-between">
-                          <div className="flex items-center space-x-3">
-                            <Bot className="h-8 w-8 text-blue-600" />
-                            <div>
-                              <CardTitle className="text-lg">{agent.name}</CardTitle>
-                              <CardDescription className="capitalize">
-                                {agent.industry} • {agent.type}
-                              </CardDescription>
-                            </div>
-                          </div>
-                          <Badge className={getStatusColor(agent.status)}>
-                            <StatusIcon className="h-3 w-3 mr-1" />
-                            {agent.status}
-                          </Badge>
-                        </div>
-                      </CardHeader>
-                      <CardContent>
-                        <p className="text-gray-600 mb-4 line-clamp-2">
-                          {agent.description || 'No description available'}
-                        </p>
-                        
-                        <div className="space-y-3">
-                          <div className="flex justify-between items-center">
-                            <span className="text-sm text-gray-500">Accuracy Rate</span>
-                            <div className="flex items-center space-x-2">
-                              <div className="w-20 bg-gray-200 rounded-full h-2">
-                                <div 
-                                  className="bg-green-500 h-2 rounded-full" 
-                                  style={{ width: `${agent.accuracy_rate * 100}%` }}
-                                ></div>
+              <>
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                  {agentsData?.agents.map((agent) => {
+                    const StatusIcon = getStatusIcon(agent.status);
+                    return (
+                      <Card 
+                        key={agent.id} 
+                        className={`hover:shadow-lg transition-shadow cursor-pointer ${
+                          selectedAgentId === agent.id ? 'ring-2 ring-blue-500' : ''
+                        }`}
+                        onClick={() => setSelectedAgentId(agent.id)}
+                      >
+                        <CardHeader>
+                          <div className="flex items-start justify-between">
+                            <div className="flex items-center space-x-3">
+                              <Bot className="h-8 w-8 text-blue-600" />
+                              <div>
+                                <CardTitle className="text-lg">{agent.name}</CardTitle>
+                                <CardDescription className="capitalize">
+                                  {agent.industry} • {agent.type}
+                                </CardDescription>
                               </div>
-                              <span className="text-sm font-medium">
-                                {(agent.accuracy_rate * 100).toFixed(1)}%
+                            </div>
+                            <Badge className={getStatusColor(agent.status)}>
+                              <StatusIcon className="h-3 w-3 mr-1" />
+                              {agent.status}
+                            </Badge>
+                          </div>
+                        </CardHeader>
+                        <CardContent>
+                          <p className="text-gray-600 mb-4 line-clamp-2">
+                            {agent.description || 'No description available'}
+                          </p>
+                          
+                          <div className="space-y-3">
+                            <div className="flex justify-between items-center">
+                              <span className="text-sm text-gray-500">Accuracy Rate</span>
+                              <div className="flex items-center space-x-2">
+                                <div className="w-20 bg-gray-200 rounded-full h-2">
+                                  <div 
+                                    className="bg-green-500 h-2 rounded-full" 
+                                    style={{ width: `${agent.accuracy_rate * 100}%` }}
+                                  ></div>
+                                </div>
+                                <span className="text-sm font-medium">
+                                  {(agent.accuracy_rate * 100).toFixed(1)}%
+                                </span>
+                              </div>
+                            </div>
+                            
+                            <div className="flex justify-between items-center">
+                              <span className="text-sm text-gray-500">Tasks Completed</span>
+                              <span className="text-sm font-medium flex items-center">
+                                <TrendingUp className="h-3 w-3 mr-1 text-green-500" />
+                                {agent.tasks_completed.toLocaleString()}
                               </span>
                             </div>
+
+                            <div className="flex justify-between items-center">
+                              <span className="text-sm text-gray-500">Training Hours</span>
+                              <span className="text-sm font-medium flex items-center">
+                                <Brain className="h-3 w-3 mr-1 text-purple-500" />
+                                {agent.total_training_hours || 0}h
+                              </span>
+                            </div>
+
+                            <div className="flex justify-between items-center">
+                              <span className="text-sm text-gray-500">Skill Points</span>
+                              <span className="text-sm font-medium flex items-center">
+                                <TrendingUp className="h-3 w-3 mr-1 text-blue-500" />
+                                {agent.skill_points || 0} pts
+                              </span>
+                            </div>
+
+                            {agent.capabilities && agent.capabilities.length > 0 && (
+                              <div className="text-sm">
+                                <span className="text-gray-500">Capabilities:</span>
+                                <div className="mt-1 flex flex-wrap gap-1">
+                                  {agent.capabilities.slice(0, 3).map((capability, index) => (
+                                    <Badge key={index} variant="outline" className="text-xs">
+                                      {capability}
+                                    </Badge>
+                                  ))}
+                                  {agent.capabilities.length > 3 && (
+                                    <Badge variant="outline" className="text-xs">
+                                      +{agent.capabilities.length - 3} more
+                                    </Badge>
+                                  )}
+                                </div>
+                              </div>
+                            )}
                           </div>
                           
-                          <div className="flex justify-between items-center">
-                            <span className="text-sm text-gray-500">Tasks Completed</span>
-                            <span className="text-sm font-medium flex items-center">
-                              <TrendingUp className="h-3 w-3 mr-1 text-green-500" />
-                              {agent.tasks_completed.toLocaleString()}
-                            </span>
+                          <div className="mt-4 pt-4 border-t flex gap-2">
+                            <Button variant="outline" className="flex-1">
+                              <Activity className="h-4 w-4 mr-2" />
+                              Workload
+                            </Button>
+                            <Button variant="outline" className="flex-1">
+                              View Details
+                            </Button>
                           </div>
+                        </CardContent>
+                      </Card>
+                    );
+                  })}
+                </div>
 
-                          <div className="flex justify-between items-center">
-                            <span className="text-sm text-gray-500">Training Hours</span>
-                            <span className="text-sm font-medium flex items-center">
-                              <Brain className="h-3 w-3 mr-1 text-purple-500" />
-                              {agent.total_training_hours || 0}h
-                            </span>
-                          </div>
-
-                          <div className="flex justify-between items-center">
-                            <span className="text-sm text-gray-500">Skill Points</span>
-                            <span className="text-sm font-medium flex items-center">
-                              <TrendingUp className="h-3 w-3 mr-1 text-blue-500" />
-                              {agent.skill_points || 0} pts
-                            </span>
-                          </div>
-
-                          {agent.capabilities && agent.capabilities.length > 0 && (
-                            <div className="text-sm">
-                              <span className="text-gray-500">Capabilities:</span>
-                              <div className="mt-1 flex flex-wrap gap-1">
-                                {agent.capabilities.slice(0, 3).map((capability, index) => (
-                                  <Badge key={index} variant="outline" className="text-xs">
-                                    {capability}
-                                  </Badge>
-                                ))}
-                                {agent.capabilities.length > 3 && (
-                                  <Badge variant="outline" className="text-xs">
-                                    +{agent.capabilities.length - 3} more
-                                  </Badge>
-                                )}
-                              </div>
-                            </div>
-                          )}
-                        </div>
-                        
-                        <div className="mt-4 pt-4 border-t flex gap-2">
-                          <Button variant="outline" className="flex-1">
-                            <Activity className="h-4 w-4 mr-2" />
-                            Workload
-                          </Button>
-                          <Button variant="outline" className="flex-1">
-                            View Details
-                          </Button>
-                        </div>
-                      </CardContent>
-                    </Card>
-                  );
-                })}
-              </div>
+                {/* Pagination */}
+                {agentsData && agentsData.total_pages > 1 && (
+                  <div className="mt-8 flex items-center justify-between">
+                    <div className="text-sm text-gray-600">
+                      Showing {((agentsData.page - 1) * agentsData.per_page) + 1} to{' '}
+                      {Math.min(agentsData.page * agentsData.per_page, agentsData.total)} of{' '}
+                      {agentsData.total} agents
+                    </div>
+                    <div className="flex items-center space-x-2">
+                      <Button
+                        variant="outline"
+                        size="sm"
+                        onClick={() => handlePageChange(agentsData.page - 1)}
+                        disabled={!agentsData.has_prev}
+                      >
+                        <ChevronLeft className="h-4 w-4" />
+                        Previous
+                      </Button>
+                      <div className="flex items-center space-x-1">
+                        {Array.from({ length: Math.min(5, agentsData.total_pages) }, (_, i) => {
+                          const page = i + 1;
+                          return (
+                            <Button
+                              key={page}
+                              variant={page === agentsData.page ? "default" : "outline"}
+                              size="sm"
+                              onClick={() => handlePageChange(page)}
+                              className="w-8 h-8 p-0"
+                            >
+                              {page}
+                            </Button>
+                          );
+                        })}
+                        {agentsData.total_pages > 5 && (
+                          <>
+                            <span className="text-gray-500">...</span>
+                            <Button
+                              variant={agentsData.total_pages === agentsData.page ? "default" : "outline"}
+                              size="sm"
+                              onClick={() => handlePageChange(agentsData.total_pages)}
+                              className="w-8 h-8 p-0"
+                            >
+                              {agentsData.total_pages}
+                            </Button>
+                          </>
+                        )}
+                      </div>
+                      <Button
+                        variant="outline"
+                        size="sm"
+                        onClick={() => handlePageChange(agentsData.page + 1)}
+                        disabled={!agentsData.has_next}
+                      >
+                        Next
+                        <ChevronRight className="h-4 w-4" />
+                      </Button>
+                    </div>
+                  </div>
+                )}
+              </>
             )}
 
-            {filteredAgents.length === 0 && !isLoading && (
+            {agentsData?.agents.length === 0 && !isLoading && (
               <div className="text-center py-12">
                 <Bot className="h-12 w-12 text-gray-400 mx-auto mb-4" />
                 <h3 className="text-lg font-medium text-gray-900 mb-2">No agents found</h3>
                 <p className="text-gray-600 mb-4">
-                  {searchTerm || industryFilter || statusFilter
+                  {searchTerm || industryFilter || statusFilter || typeFilter
                     ? 'Try adjusting your filters to see more results.'
                     : 'Get started by creating your first AI agent.'}
                 </p>
