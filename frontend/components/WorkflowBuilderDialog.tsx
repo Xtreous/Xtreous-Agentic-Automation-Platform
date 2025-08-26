@@ -4,6 +4,7 @@ import { Button } from '@/components/ui/button';
 import { useToast } from '@/components/ui/use-toast';
 import WorkflowBuilder from './WorkflowBuilder';
 import backend from '~backend/client';
+import type { WorkflowNode } from '../lib/workflow-types';
 
 interface WorkflowBuilderDialogProps {
   open: boolean;
@@ -24,10 +25,9 @@ export default function WorkflowBuilderDialog({
   const handleSave = async (workflowData: any) => {
     setIsLoading(true);
     try {
-      // Convert the visual workflow to the backend format
       const steps = workflowData.nodes
-        .filter((node: any) => node.type !== 'start')
-        .map((node: any, index: number) => ({
+        .filter((node: WorkflowNode) => node.type !== 'start' && node.type !== 'end')
+        .map((node: WorkflowNode, index: number) => ({
           id: node.id,
           name: node.name,
           type: node.type,
@@ -36,12 +36,13 @@ export default function WorkflowBuilderDialog({
         }));
 
       if (workflow?.id) {
-        // Update existing workflow
         await backend.core.updateWorkflow({
           id: workflow.id,
           name: workflowData.name,
           description: workflowData.description,
-          steps
+          steps,
+          trigger_type: workflowData.trigger_type,
+          trigger_config: workflowData.trigger_config
         });
         
         toast({
@@ -49,12 +50,13 @@ export default function WorkflowBuilderDialog({
           description: "Your workflow has been updated successfully.",
         });
       } else {
-        // Create new workflow
         await backend.core.createWorkflow({
           name: workflowData.name,
           description: workflowData.description,
-          industry: 'general', // Default industry
-          steps
+          industry: 'general',
+          steps,
+          trigger_type: workflowData.trigger_type,
+          trigger_config: workflowData.trigger_config
         });
         
         toast({
@@ -79,13 +81,11 @@ export default function WorkflowBuilderDialog({
 
   const handleTest = async (workflowData: any) => {
     try {
-      // Simulate workflow testing
       toast({
         title: "Workflow test started",
         description: "Testing your workflow with sample data...",
       });
 
-      // In a real implementation, this would execute the workflow
       setTimeout(() => {
         toast({
           title: "Test completed",
@@ -102,11 +102,12 @@ export default function WorkflowBuilderDialog({
     }
   };
 
-  // Convert backend workflow to visual format
   const initialWorkflow = workflow ? {
     id: workflow.id,
     name: workflow.name,
     description: workflow.description,
+    trigger_type: workflow.trigger_type,
+    trigger_config: workflow.trigger_config,
     nodes: [
       {
         id: 'start',
@@ -120,7 +121,7 @@ export default function WorkflowBuilderDialog({
         id: step.id,
         type: step.type,
         name: step.name,
-        position: { x: 100 + (index + 1) * 250, y: 100 },
+        position: { x: 100 + (index + 1) * 250, y: 100 + (index % 2) * 100 },
         config: step.config || {},
         connections: index < workflow.steps.length - 1 ? [workflow.steps[index + 1].id] : []
       }))

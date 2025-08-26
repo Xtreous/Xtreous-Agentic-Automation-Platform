@@ -271,6 +271,7 @@ import { updateCollaboration as api_core_update_collaboration_updateCollaboratio
 import { updateCollaborationContext as api_core_update_collaboration_context_updateCollaborationContext } from "~backend/core/update_collaboration_context";
 import { updateTask as api_core_update_task_updateTask } from "~backend/core/update_task";
 import { updateWorkflow as api_core_update_workflow_updateWorkflow } from "~backend/core/update_workflow";
+import { webhookTrigger as api_core_webhook_trigger_webhookTrigger } from "~backend/core/webhook_trigger";
 
 export namespace core {
 
@@ -312,6 +313,7 @@ export namespace core {
             this.updateCollaborationContext = this.updateCollaborationContext.bind(this)
             this.updateTask = this.updateTask.bind(this)
             this.updateWorkflow = this.updateWorkflow.bind(this)
+            this.webhookTrigger = this.webhookTrigger.bind(this)
         }
 
         /**
@@ -744,15 +746,36 @@ export namespace core {
         public async updateWorkflow(params: RequestType<typeof api_core_update_workflow_updateWorkflow>): Promise<ResponseType<typeof api_core_update_workflow_updateWorkflow>> {
             // Construct the body with only the fields which we want encoded within the body (excluding query string or header fields)
             const body: Record<string, any> = {
-                description: params.description,
-                name:        params.name,
-                status:      params.status,
-                steps:       params.steps,
+                description:      params.description,
+                name:             params.name,
+                status:           params.status,
+                steps:            params.steps,
+                "trigger_config": params["trigger_config"],
+                "trigger_type":   params["trigger_type"],
             }
 
             // Now make the actual call to the API
             const resp = await this.baseClient.callTypedAPI(`/workflows/${encodeURIComponent(params.id)}`, {method: "PUT", body: JSON.stringify(body)})
             return JSON.parse(await resp.text(), dateReviver) as ResponseType<typeof api_core_update_workflow_updateWorkflow>
+        }
+
+        /**
+         * Receives a webhook and triggers a workflow.
+         */
+        public async webhookTrigger(params: RequestType<typeof api_core_webhook_trigger_webhookTrigger>): Promise<ResponseType<typeof api_core_webhook_trigger_webhookTrigger>> {
+            // Convert our params into the objects we need for the request
+            const query = makeRecord<string, string | string[]>({
+                secret: params.secret,
+            })
+
+            // Construct the body with only the fields which we want encoded within the body (excluding query string or header fields)
+            const body: Record<string, any> = {
+                payload: params.payload,
+            }
+
+            // Now make the actual call to the API
+            const resp = await this.baseClient.callTypedAPI(`/workflows/${encodeURIComponent(params.workflow_id)}/trigger/webhook`, {query, method: "POST", body: JSON.stringify(body)})
+            return JSON.parse(await resp.text(), dateReviver) as ResponseType<typeof api_core_webhook_trigger_webhookTrigger>
         }
     }
 }

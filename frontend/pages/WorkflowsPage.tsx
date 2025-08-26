@@ -5,7 +5,7 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/com
 import { Badge } from '@/components/ui/badge';
 import { Input } from '@/components/ui/input';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
-import { Workflow, Plus, Search, Play, Pause, Settings, Edit, Eye } from 'lucide-react';
+import { Workflow, Plus, Search, Play, Pause, Settings, Edit, Eye, Webhook, Calendar } from 'lucide-react';
 import backend from '~backend/client';
 import type { Workflow as WorkflowType } from '~backend/core/types';
 import CreateWorkflowDialog from '../components/CreateWorkflowDialog';
@@ -47,6 +47,14 @@ export default function WorkflowsPage() {
       case 'active': return Play;
       case 'inactive': return Pause;
       default: return Settings;
+    }
+  };
+
+  const getTriggerIcon = (triggerType: string) => {
+    switch (triggerType) {
+      case 'webhook': return Webhook;
+      case 'schedule': return Calendar;
+      default: return Play;
     }
   };
 
@@ -146,6 +154,7 @@ export default function WorkflowsPage() {
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
             {filteredWorkflows.map((workflow) => {
               const StatusIcon = getStatusIcon(workflow.status);
+              const TriggerIcon = getTriggerIcon(workflow.trigger_type);
               return (
                 <Card key={workflow.id} className="hover:shadow-lg transition-shadow">
                   <CardHeader>
@@ -171,6 +180,13 @@ export default function WorkflowsPage() {
                     </p>
                     
                     <div className="space-y-3">
+                      <div className="flex justify-between items-center">
+                        <span className="text-sm text-gray-400">Trigger</span>
+                        <Badge variant="outline" className="capitalize">
+                          <TriggerIcon className="h-3 w-3 mr-1" />
+                          {workflow.trigger_type.replace('_', ' ')}
+                        </Badge>
+                      </div>
                       <div className="flex justify-between items-center">
                         <span className="text-sm text-gray-400">Steps</span>
                         <span className="text-sm font-medium">

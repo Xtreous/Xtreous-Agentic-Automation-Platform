@@ -30,22 +30,52 @@ export interface Integration {
   updated_at: Date;
 }
 
+export type TriggerType = "manual" | "webhook" | "schedule" | "file_upload";
+
+export interface WebhookTriggerConfig {
+  secret: string;
+}
+
+export interface ScheduleTriggerConfig {
+  cron: string;
+}
+
+export interface FileUploadTriggerConfig {
+  bucket_name: string;
+  file_prefix?: string;
+}
+
 export interface Workflow {
   id: number;
   name: string;
   description?: string;
   status: "active" | "inactive" | "draft";
-  trigger_type: "manual" | "scheduled" | "event";
+  trigger_type: TriggerType;
+  trigger_config?: WebhookTriggerConfig | ScheduleTriggerConfig | FileUploadTriggerConfig;
   steps: WorkflowStep[];
   created_at: Date;
   updated_at: Date;
 }
 
+export interface Condition {
+  field: string;
+  operator: 'equals' | 'not_equals' | 'greater_than' | 'less_than' | 'contains' | 'starts_with' | 'is_empty' | 'is_not_empty';
+  value: any;
+}
+
+export interface ConditionGroup {
+  operator: 'AND' | 'OR';
+  conditions: (Condition | ConditionGroup)[];
+}
+
 export interface WorkflowStep {
-  id: number;
+  id: string;
   name: string;
   type: "agent" | "integration" | "condition" | "delay";
-  config: Record<string, any>;
+  config: {
+    conditionGroup?: ConditionGroup;
+    [key: string]: any;
+  };
   order: number;
 }
 

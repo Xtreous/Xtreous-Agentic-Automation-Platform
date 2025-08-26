@@ -1,6 +1,6 @@
 import { api, APIError } from "encore.dev/api";
 import { coreDB } from "./db";
-import type { Workflow } from "./types";
+import type { Workflow, TriggerType } from "./types";
 
 export interface UpdateWorkflowRequest {
   id: number;
@@ -8,6 +8,8 @@ export interface UpdateWorkflowRequest {
   description?: string;
   steps?: any[];
   status?: string;
+  trigger_type?: TriggerType;
+  trigger_config?: any;
 }
 
 // Updates an existing workflow.
@@ -31,6 +33,8 @@ export const updateWorkflow = api<UpdateWorkflowRequest, Workflow>(
         description = COALESCE(${updates.description}, description),
         steps = COALESCE(${updates.steps ? JSON.stringify(updates.steps) : null}, steps),
         status = COALESCE(${updates.status}, status),
+        trigger_type = COALESCE(${updates.trigger_type}, trigger_type),
+        trigger_config = COALESCE(${updates.trigger_config ? JSON.stringify(updates.trigger_config) : null}, trigger_config),
         updated_at = NOW()
       WHERE id = ${id}
       RETURNING *

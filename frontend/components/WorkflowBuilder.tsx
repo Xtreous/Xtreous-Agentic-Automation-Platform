@@ -27,26 +27,12 @@ import {
   Copy,
   Save,
   Eye,
-  AlertTriangle
+  AlertTriangle,
+  Webhook,
+  Upload,
+  Calendar as ScheduleIcon
 } from 'lucide-react';
-
-interface WorkflowNode {
-  id: string;
-  type: 'start' | 'action' | 'condition' | 'integration' | 'delay' | 'end';
-  name: string;
-  description?: string;
-  position: { x: number; y: number };
-  config: Record<string, any>;
-  connections: string[];
-}
-
-interface WorkflowConnection {
-  id: string;
-  from: string;
-  to: string;
-  condition?: string;
-  label?: string;
-}
+import type { WorkflowNode, WorkflowConnection, ConditionGroup, Condition } from '../lib/workflow-types';
 
 interface WorkflowBuilderProps {
   initialWorkflow?: {
@@ -55,6 +41,8 @@ interface WorkflowBuilderProps {
     description?: string;
     nodes: WorkflowNode[];
     connections: WorkflowConnection[];
+    trigger_type?: string;
+    trigger_config?: any;
   };
   onSave: (workflow: any) => void;
   onTest?: (workflow: any) => void;
@@ -100,6 +88,78 @@ const integrationTypes = [
   { id: 'api', name: 'REST API', icon: ArrowRight }
 ];
 
+const ConditionBuilder: React.FC<{ conditionGroup: ConditionGroup, onChange: (newGroup: ConditionGroup) => void, level?: number }> = ({ conditionGroup, onChange, level = 0 }) => {
+  const handleOperatorChange = (op: 'AND' | 'OR') => {
+    onChange({ ...conditionGroup, operator: op });
+  };
+
+  const addCondition = () => {
+    const newCondition: Condition = { field: '', operator: 'equals', value: '' };
+    onChange({ ...conditionGroup, conditions: [...conditionGroup.conditions, newCondition] });
+  };
+
+  const addGroup = () => {
+    const newGroup: ConditionGroup = { operator: 'AND', conditions: [] };
+    onChange({ ...conditionGroup, conditions: [...conditionGroup.conditions, newGroup] });
+  };
+
+  const updateCondition = (index: number, updates: Partial<Condition | ConditionGroup>) => {
+    const newConditions = [...conditionGroup.conditions];
+    newConditions[index] = { ...newConditions[index], ...updates } as Condition | ConditionGroup;
+    onChange({ ...conditionGroup, conditions: newConditions });
+  };
+
+  const removeCondition = (index: number) => {
+    const newConditions = conditionGroup.conditions.filter((_, i) => i !== index);
+    onChange({ ...conditionGroup, conditions: newConditions });
+  };
+
+  return (
+    <div className={`p-3 rounded-lg ${level % 2 === 0 ? 'bg-gray-800/50' : 'bg-gray-700/50'}`}>
+      <div className="flex items-center gap-2 mb-2">
+        <Select value={conditionGroup.operator} onValueChange={(val) => handleOperatorChange(val as 'AND' | 'OR')}>
+          <SelectTrigger className="w-24 h-7 text-xs">
+            <SelectValue />
+          </SelectTrigger>
+          <SelectContent>
+            <SelectItem value="AND">AND</SelectItem>
+            <SelectItem value="OR">OR</SelectItem>
+          </SelectContent>
+        </Select>
+        <Button size="sm" variant="outline" className="h-7 text-xs" onClick={addCondition}>+ Condition</Button>
+        <Button size="sm" variant="outline" className="h-7 text-xs" onClick={addGroup}>+ Group</Button>
+      </div>
+      <div className="space-y-2">
+        {conditionGroup.conditions.map((cond, index) => (
+          <div key={index} className="flex items-start gap-2">
+            {'conditions' in cond ? (
+              <ConditionBuilder conditionGroup={cond} onChange={(newGroup) => updateCondition(index, newGroup)} level={level + 1} />
+            ) : (
+              <div className="flex-1 grid grid-cols-3 gap-1">
+                <Input placeholder="Field" value={cond.field} onChange={(e) => updateCondition(index, { field: e.target.value })} className="h-7 text-xs" />
+                <Select value={cond.operator} onValueChange={(op) => updateCondition(index, { operator: op as any })}>
+                  <SelectTrigger className="h-7 text-xs"><SelectValue /></SelectTrigger>
+                  <SelectContent>
+                    <SelectItem value="equals">equals</SelectItem>
+                    <SelectItem value="not_equals">not equals</SelectItem>
+                    <SelectItem value="greater_than">&gt;</SelectItem>
+                    <SelectItem value="less_than">&lt;</SelectItem>
+                    <SelectItem value="contains">contains</SelectItem>
+                  </SelectContent>
+                </Select>
+                <Input placeholder="Value" value={cond.value} onChange={(e) => updateCondition(index, { value: e.target.value })} className="h-7 text-xs" />
+              </div>
+            )}
+            <Button size="icon" variant="ghost" className="h-7 w-7" onClick={() => removeCondition(index)}>
+              <Trash2 className="h-3 w-3" />
+            </Button>
+          </div>
+        ))}
+      </div>
+    </div>
+  );
+};
+
 export default function WorkflowBuilder({ initialWorkflow, onSave, onTest }: WorkflowBuilderProps) {
   const [workflowName, setWorkflowName] = useState(initialWorkflow?.name || '');
   const [workflowDescription, setWorkflowDescription] = useState(initialWorkflow?.description || '');
@@ -120,6 +180,8 @@ export default function WorkflowBuilder({ initialWorkflow, onSave, onTest }: Wor
   const [isConnecting, setIsConnecting] = useState(false);
   const [connectionStart, setConnectionStart] = useState<string | null>(null);
   const [showNodePanel, setShowNodePanel] = useState(false);
+  const [triggerType, setTriggerType] = useState(initialWorkflow?.trigger_type || 'manual');
+  const [triggerConfig, setTriggerConfig] = useState(initialWorkflow?.trigger_config || {});
   const canvasRef = useRef<HTMLDivElement>(null);
 
   const addNode = useCallback((type: string, position: { x: number; y: number }) => {
@@ -147,7 +209,7 @@ export default function WorkflowBuilder({ initialWorkflow, onSave, onTest }: Wor
   }, [selectedNode]);
 
   const deleteNode = useCallback((nodeId: string) => {
-    if (nodeId === 'start') return; // Can't delete start node
+    if (nodeId === 'start') return;
     
     setNodes(prev => prev.filter(node => node.id !== nodeId));
     setConnections(prev => prev.filter(conn => conn.from !== nodeId && conn.to !== nodeId));
@@ -167,7 +229,6 @@ export default function WorkflowBuilder({ initialWorkflow, onSave, onTest }: Wor
 
     setConnections(prev => [...prev, newConnection]);
     
-    // Update the from node's connections
     setNodes(prev => prev.map(node => 
       node.id === fromId 
         ? { ...node, connections: [...node.connections, toId] }
@@ -231,10 +292,12 @@ export default function WorkflowBuilder({ initialWorkflow, onSave, onTest }: Wor
       name: workflowName,
       description: workflowDescription,
       nodes,
-      connections
+      connections,
+      trigger_type: triggerType,
+      trigger_config: triggerConfig
     };
     onSave(workflow);
-  }, [workflowName, workflowDescription, nodes, connections, onSave]);
+  }, [workflowName, workflowDescription, nodes, connections, onSave, triggerType, triggerConfig]);
 
   const handleTest = useCallback(() => {
     if (onTest) {
@@ -242,11 +305,13 @@ export default function WorkflowBuilder({ initialWorkflow, onSave, onTest }: Wor
         name: workflowName,
         description: workflowDescription,
         nodes,
-        connections
+        connections,
+        trigger_type: triggerType,
+        trigger_config: triggerConfig
       };
       onTest(workflow);
     }
-  }, [workflowName, workflowDescription, nodes, connections, onTest]);
+  }, [workflowName, workflowDescription, nodes, connections, onTest, triggerType, triggerConfig]);
 
   const getNodeIcon = (type: string) => {
     switch (type) {
@@ -278,8 +343,8 @@ export default function WorkflowBuilder({ initialWorkflow, onSave, onTest }: Wor
     
     if (!fromNode || !toNode) return null;
 
-    const fromX = fromNode.position.x + 100; // Node width / 2
-    const fromY = fromNode.position.y + 40; // Node height / 2
+    const fromX = fromNode.position.x + 100;
+    const fromY = fromNode.position.y + 40;
     const toX = toNode.position.x + 100;
     const toY = toNode.position.y + 40;
 
@@ -344,6 +409,42 @@ export default function WorkflowBuilder({ initialWorkflow, onSave, onTest }: Wor
         </div>
 
         <div className="p-4 border-b border-gray-700">
+          <h4 className="font-medium text-gray-100 mb-3">Trigger</h4>
+          <Select value={triggerType} onValueChange={(val) => { setTriggerType(val); setTriggerConfig({}); }}>
+            <SelectTrigger>
+              <SelectValue placeholder="Select trigger type" />
+            </SelectTrigger>
+            <SelectContent>
+              <SelectItem value="manual">Manual</SelectItem>
+              <SelectItem value="schedule">Schedule</SelectItem>
+              <SelectItem value="webhook">Webhook</SelectItem>
+              <SelectItem value="file_upload">File Upload</SelectItem>
+            </SelectContent>
+          </Select>
+          
+          {triggerType === 'schedule' && (
+            <div className="mt-3 space-y-2">
+              <Label className="text-xs">Cron Expression</Label>
+              <Input placeholder="* * * * *" value={triggerConfig.cron || ''} onChange={(e) => setTriggerConfig({ ...triggerConfig, cron: e.target.value })} />
+            </div>
+          )}
+          {triggerType === 'webhook' && (
+            <div className="mt-3 space-y-2">
+              <Label className="text-xs">Webhook URL</Label>
+              <Input value={`/api/core/workflows/${initialWorkflow?.id}/trigger/webhook?secret=...`} readOnly />
+              <Label className="text-xs">Secret</Label>
+              <Input placeholder="Your secret token" value={triggerConfig.secret || ''} onChange={(e) => setTriggerConfig({ ...triggerConfig, secret: e.target.value })} />
+            </div>
+          )}
+          {triggerType === 'file_upload' && (
+            <div className="mt-3 space-y-2">
+              <Label className="text-xs">Bucket Name</Label>
+              <Input placeholder="e.g., my-uploads-bucket" value={triggerConfig.bucket_name || ''} onChange={(e) => setTriggerConfig({ ...triggerConfig, bucket_name: e.target.value })} />
+            </div>
+          )}
+        </div>
+
+        <div className="p-4 border-b border-gray-700">
           <div className="flex items-center justify-between mb-3">
             <h4 className="font-medium text-gray-100">Actions</h4>
             <div className="flex gap-1">
@@ -378,7 +479,7 @@ export default function WorkflowBuilder({ initialWorkflow, onSave, onTest }: Wor
           )}
         </div>
 
-        <div className="flex-1 p-4">
+        <div className="flex-1 p-4 overflow-y-auto">
           <h4 className="font-medium text-gray-100 mb-3">Add Nodes</h4>
           <div className="space-y-2">
             {nodeTypes.map((nodeType) => {
@@ -421,7 +522,6 @@ export default function WorkflowBuilder({ initialWorkflow, onSave, onTest }: Wor
           onMouseUp={handleMouseUp}
           onClick={handleCanvasClick}
         >
-          {/* Grid Pattern */}
           <svg className="absolute inset-0 w-full h-full pointer-events-none">
             <defs>
               <pattern id="grid" width="20" height="20" patternUnits="userSpaceOnUse">
@@ -440,22 +540,20 @@ export default function WorkflowBuilder({ initialWorkflow, onSave, onTest }: Wor
             </defs>
             <rect width="100%" height="100%" fill="url(#grid)" />
             
-            {/* Render connections */}
             {connections.map(renderConnection)}
           </svg>
 
-          {/* Render nodes */}
           {nodes.map((node) => {
             const Icon = getNodeIcon(node.type);
             const isSelected = selectedNode?.id === node.id;
-            const isConnecting = connectionStart === node.id;
+            const isConnectingFrom = connectionStart === node.id;
             
             return (
               <div
                 key={node.id}
                 className={`absolute w-48 cursor-pointer transition-all ${
-                  isSelected ? 'ring-2 ring-blue-500 ring-offset-2' : ''
-                } ${isConnecting ? 'ring-2 ring-green-500 ring-offset-2' : ''}`}
+                  isSelected ? 'ring-2 ring-blue-500 ring-offset-2 ring-offset-gray-800' : ''
+                } ${isConnectingFrom ? 'ring-2 ring-green-500 ring-offset-2 ring-offset-gray-800' : ''}`}
                 style={{
                   left: node.position.x,
                   top: node.position.y,
@@ -506,7 +604,7 @@ export default function WorkflowBuilder({ initialWorkflow, onSave, onTest }: Wor
 
       {/* Properties Panel */}
       {selectedNode && (
-        <div className="w-80 bg-gray-900 border-l border-gray-700 p-4">
+        <div className="w-80 bg-gray-900 border-l border-gray-700 p-4 overflow-y-auto">
           <div className="flex items-center justify-between mb-4">
             <h3 className="font-semibold text-gray-100">Node Properties</h3>
             <Button
@@ -524,7 +622,7 @@ export default function WorkflowBuilder({ initialWorkflow, onSave, onTest }: Wor
               <TabsTrigger value="config">Config</TabsTrigger>
             </TabsList>
 
-            <TabsContent value="general" className="space-y-4">
+            <TabsContent value="general" className="mt-4 space-y-4">
               <div>
                 <Label htmlFor="node-name">Name</Label>
                 <Input
@@ -552,133 +650,13 @@ export default function WorkflowBuilder({ initialWorkflow, onSave, onTest }: Wor
               </div>
             </TabsContent>
 
-            <TabsContent value="config" className="space-y-4">
-              {selectedNode.type === 'action' && (
-                <div className="space-y-3">
-                  <div>
-                    <Label htmlFor="action-type">Action Type</Label>
-                    <Select
-                      value={selectedNode.config.actionType || ''}
-                      onValueChange={(value) => updateNode(selectedNode.id, {
-                        config: { ...selectedNode.config, actionType: value }
-                      })}
-                    >
-                      <SelectTrigger>
-                        <SelectValue placeholder="Select action type" />
-                      </SelectTrigger>
-                      <SelectContent>
-                        <SelectItem value="data_processing">Data Processing</SelectItem>
-                        <SelectItem value="notification">Send Notification</SelectItem>
-                        <SelectItem value="calculation">Calculation</SelectItem>
-                        <SelectItem value="validation">Validation</SelectItem>
-                        <SelectItem value="transformation">Data Transformation</SelectItem>
-                      </SelectContent>
-                    </Select>
-                  </div>
-
-                  <div>
-                    <Label htmlFor="action-params">Parameters (JSON)</Label>
-                    <Textarea
-                      id="action-params"
-                      value={selectedNode.config.parameters || '{}'}
-                      onChange={(e) => updateNode(selectedNode.id, {
-                        config: { ...selectedNode.config, parameters: e.target.value }
-                      })}
-                      placeholder='{"key": "value"}'
-                      rows={4}
-                    />
-                  </div>
-                </div>
-              )}
-
+            <TabsContent value="config" className="mt-4 space-y-4">
               {selectedNode.type === 'condition' && (
-                <div className="space-y-3">
-                  <div>
-                    <Label htmlFor="condition-field">Field to Check</Label>
-                    <Input
-                      id="condition-field"
-                      value={selectedNode.config.field || ''}
-                      onChange={(e) => updateNode(selectedNode.id, {
-                        config: { ...selectedNode.config, field: e.target.value }
-                      })}
-                      placeholder="e.g., status, amount, priority"
-                    />
-                  </div>
-
-                  <div>
-                    <Label htmlFor="condition-operator">Operator</Label>
-                    <Select
-                      value={selectedNode.config.operator || ''}
-                      onValueChange={(value) => updateNode(selectedNode.id, {
-                        config: { ...selectedNode.config, operator: value }
-                      })}
-                    >
-                      <SelectTrigger>
-                        <SelectValue placeholder="Select operator" />
-                      </SelectTrigger>
-                      <SelectContent>
-                        <SelectItem value="equals">Equals</SelectItem>
-                        <SelectItem value="not_equals">Not Equals</SelectItem>
-                        <SelectItem value="greater_than">Greater Than</SelectItem>
-                        <SelectItem value="less_than">Less Than</SelectItem>
-                        <SelectItem value="contains">Contains</SelectItem>
-                        <SelectItem value="starts_with">Starts With</SelectItem>
-                      </SelectContent>
-                    </Select>
-                  </div>
-
-                  <div>
-                    <Label htmlFor="condition-value">Value</Label>
-                    <Input
-                      id="condition-value"
-                      value={selectedNode.config.value || ''}
-                      onChange={(e) => updateNode(selectedNode.id, {
-                        config: { ...selectedNode.config, value: e.target.value }
-                      })}
-                      placeholder="Comparison value"
-                    />
-                  </div>
-                </div>
+                <ConditionBuilder 
+                  conditionGroup={selectedNode.config.conditionGroup || { operator: 'AND', conditions: [] }}
+                  onChange={(newGroup) => updateNode(selectedNode.id, { config: { ...selectedNode.config, conditionGroup: newGroup }})}
+                />
               )}
-
-              {selectedNode.type === 'integration' && (
-                <div className="space-y-3">
-                  <div>
-                    <Label htmlFor="integration-type">Integration Type</Label>
-                    <Select
-                      value={selectedNode.config.integrationType || ''}
-                      onValueChange={(value) => updateNode(selectedNode.id, {
-                        config: { ...selectedNode.config, integrationType: value }
-                      })}
-                    >
-                      <SelectTrigger>
-                        <SelectValue placeholder="Select integration" />
-                      </SelectTrigger>
-                      <SelectContent>
-                        {integrationTypes.map((integration) => (
-                          <SelectItem key={integration.id} value={integration.id}>
-                            {integration.name}
-                          </SelectItem>
-                        ))}
-                      </SelectContent>
-                    </Select>
-                  </div>
-
-                  <div>
-                    <Label htmlFor="integration-config">Configuration</Label>
-                    <Textarea
-                      id="integration-config"
-                      value={selectedNode.config.integrationConfig || '{}'}
-                      onChange={(e) => updateNode(selectedNode.id, {
-                        config: { ...selectedNode.config, integrationConfig: e.target.value }
-                      })}
-                      placeholder='{"endpoint": "https://api.example.com"}'
-                      rows={4}
-                    />
-                  </div>
-                </div>
-              )}
-
               {selectedNode.type === 'delay' && (
                 <div className="space-y-3">
                   <div>
@@ -690,29 +668,57 @@ export default function WorkflowBuilder({ initialWorkflow, onSave, onTest }: Wor
                       onChange={(e) => updateNode(selectedNode.id, {
                         config: { ...selectedNode.config, duration: parseInt(e.target.value) }
                       })}
-                      placeholder="Duration in seconds"
+                      placeholder="Duration"
                     />
                   </div>
-
-                  <div>
-                    <Label htmlFor="delay-unit">Unit</Label>
-                    <Select
-                      value={selectedNode.config.unit || 'seconds'}
-                      onValueChange={(value) => updateNode(selectedNode.id, {
-                        config: { ...selectedNode.config, unit: value }
-                      })}
-                    >
-                      <SelectTrigger>
-                        <SelectValue />
-                      </SelectTrigger>
-                      <SelectContent>
-                        <SelectItem value="seconds">Seconds</SelectItem>
-                        <SelectItem value="minutes">Minutes</SelectItem>
-                        <SelectItem value="hours">Hours</SelectItem>
-                        <SelectItem value="days">Days</SelectItem>
-                      </SelectContent>
-                    </Select>
-                  </div>
+                  <Select
+                    value={selectedNode.config.unit || 'seconds'}
+                    onValueChange={(value) => updateNode(selectedNode.id, {
+                      config: { ...selectedNode.config, unit: value }
+                    })}
+                  >
+                    <SelectTrigger><SelectValue /></SelectTrigger>
+                    <SelectContent>
+                      <SelectItem value="seconds">Seconds</SelectItem>
+                      <SelectItem value="minutes">Minutes</SelectItem>
+                      <SelectItem value="hours">Hours</SelectItem>
+                      <SelectItem value="days">Days</SelectItem>
+                    </SelectContent>
+                  </Select>
+                </div>
+              )}
+              {selectedNode.type === 'integration' && (
+                <div className="space-y-3">
+                  <Label>Integration Config</Label>
+                  <Textarea
+                    value={JSON.stringify(selectedNode.config.integrationConfig || {}, null, 2)}
+                    onChange={(e) => {
+                      try {
+                        const parsed = JSON.parse(e.target.value);
+                        updateNode(selectedNode.id, { config: { ...selectedNode.config, integrationConfig: parsed } });
+                      } catch (err) {
+                        // Handle JSON parse error if needed
+                      }
+                    }}
+                    rows={10}
+                  />
+                </div>
+              )}
+              {selectedNode.type === 'action' && (
+                <div className="space-y-3">
+                  <Label>Action Config</Label>
+                  <Textarea
+                    value={JSON.stringify(selectedNode.config.actionConfig || {}, null, 2)}
+                    onChange={(e) => {
+                      try {
+                        const parsed = JSON.parse(e.target.value);
+                        updateNode(selectedNode.id, { config: { ...selectedNode.config, actionConfig: parsed } });
+                      } catch (err) {
+                        // Handle JSON parse error if needed
+                      }
+                    }}
+                    rows={10}
+                  />
                 </div>
               )}
             </TabsContent>
