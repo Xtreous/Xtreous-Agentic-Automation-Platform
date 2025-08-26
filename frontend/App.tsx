@@ -2,9 +2,13 @@ import React from 'react';
 import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
 import { Toaster } from '@/components/ui/toaster';
+import { AuthProvider } from './components/AuthProvider';
+import ProtectedRoute from './components/ProtectedRoute';
 import Header from './components/Header';
 import Footer from './components/Footer';
 import HomePage from './pages/HomePage';
+import LoginForm from './components/LoginForm';
+import RegisterForm from './components/RegisterForm';
 import DashboardPage from './pages/DashboardPage';
 import AgentsPage from './pages/AgentsPage';
 import TasksPage from './pages/TasksPage';
@@ -13,6 +17,8 @@ import WorkflowsPage from './pages/WorkflowsPage';
 import TrainingPage from './pages/TrainingPage';
 import IntegrationsPage from './pages/IntegrationsPage';
 import SolutionsPage from './pages/SolutionsPage';
+import ProfilePage from './pages/ProfilePage';
+import SubscriptionPage from './pages/SubscriptionPage';
 
 const queryClient = new QueryClient({
   defaultOptions: {
@@ -31,14 +37,56 @@ function AppInner() {
         <main className="flex-1">
           <Routes>
             <Route path="/" element={<HomePage />} />
-            <Route path="/dashboard" element={<DashboardPage />} />
-            <Route path="/agents" element={<AgentsPage />} />
-            <Route path="/tasks" element={<TasksPage />} />
-            <Route path="/collaborations" element={<CollaborationsPage />} />
-            <Route path="/workflows" element={<WorkflowsPage />} />
-            <Route path="/training" element={<TrainingPage />} />
-            <Route path="/integrations" element={<IntegrationsPage />} />
+            <Route path="/login" element={<LoginForm />} />
+            <Route path="/register" element={<RegisterForm />} />
             <Route path="/solutions" element={<SolutionsPage />} />
+            
+            {/* Protected Routes */}
+            <Route path="/dashboard" element={
+              <ProtectedRoute>
+                <DashboardPage />
+              </ProtectedRoute>
+            } />
+            <Route path="/agents" element={
+              <ProtectedRoute>
+                <AgentsPage />
+              </ProtectedRoute>
+            } />
+            <Route path="/tasks" element={
+              <ProtectedRoute>
+                <TasksPage />
+              </ProtectedRoute>
+            } />
+            <Route path="/collaborations" element={
+              <ProtectedRoute>
+                <CollaborationsPage />
+              </ProtectedRoute>
+            } />
+            <Route path="/workflows" element={
+              <ProtectedRoute>
+                <WorkflowsPage />
+              </ProtectedRoute>
+            } />
+            <Route path="/training" element={
+              <ProtectedRoute>
+                <TrainingPage />
+              </ProtectedRoute>
+            } />
+            <Route path="/integrations" element={
+              <ProtectedRoute>
+                <IntegrationsPage />
+              </ProtectedRoute>
+            } />
+            <Route path="/profile" element={
+              <ProtectedRoute>
+                <ProfilePage />
+              </ProtectedRoute>
+            } />
+            <Route path="/subscription" element={
+              <ProtectedRoute>
+                <SubscriptionPage />
+              </ProtectedRoute>
+            } />
           </Routes>
         </main>
         <Footer />
@@ -51,7 +99,9 @@ function AppInner() {
 export default function App() {
   return (
     <QueryClientProvider client={queryClient}>
-      <AppInner />
+      <AuthProvider>
+        <AppInner />
+      </AuthProvider>
     </QueryClientProvider>
   );
 }

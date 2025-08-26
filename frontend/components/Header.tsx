@@ -3,22 +3,29 @@ import { Link, useLocation } from 'react-router-dom';
 import { Button } from '@/components/ui/button';
 import { Bot, Menu, X } from 'lucide-react';
 import { useState } from 'react';
+import { useAuth } from './AuthProvider';
+import UserMenu from './UserMenu';
 
 export default function Header() {
   const location = useLocation();
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
+  const { isAuthenticated } = useAuth();
 
   const navigation = [
     { name: 'Home', href: '/' },
-    { name: 'Dashboard', href: '/dashboard' },
-    { name: 'Agents', href: '/agents' },
-    { name: 'Tasks', href: '/tasks' },
-    { name: 'Collaborations', href: '/collaborations' },
-    { name: 'Workflows', href: '/workflows' },
-    { name: 'Training', href: '/training' },
-    { name: 'Integrations', href: '/integrations' },
+    { name: 'Dashboard', href: '/dashboard', protected: true },
+    { name: 'Agents', href: '/agents', protected: true },
+    { name: 'Tasks', href: '/tasks', protected: true },
+    { name: 'Collaborations', href: '/collaborations', protected: true },
+    { name: 'Workflows', href: '/workflows', protected: true },
+    { name: 'Training', href: '/training', protected: true },
+    { name: 'Integrations', href: '/integrations', protected: true },
     { name: 'Solutions', href: '/solutions' },
   ];
+
+  const visibleNavigation = navigation.filter(item => 
+    !item.protected || isAuthenticated
+  );
 
   const isActive = (href: string) => {
     if (href === '/') {
@@ -39,7 +46,7 @@ export default function Header() {
 
           {/* Desktop Navigation */}
           <nav className="hidden md:flex space-x-8">
-            {navigation.map((item) => (
+            {visibleNavigation.map((item) => (
               <Link
                 key={item.name}
                 to={item.href}
@@ -53,6 +60,22 @@ export default function Header() {
               </Link>
             ))}
           </nav>
+
+          {/* Auth Section */}
+          <div className="hidden md:flex items-center space-x-4">
+            {isAuthenticated ? (
+              <UserMenu />
+            ) : (
+              <>
+                <Link to="/login">
+                  <Button variant="ghost">Sign In</Button>
+                </Link>
+                <Link to="/register">
+                  <Button>Get Started</Button>
+                </Link>
+              </>
+            )}
+          </div>
 
           {/* Mobile menu button */}
           <div className="md:hidden">
@@ -74,7 +97,7 @@ export default function Header() {
         {isMobileMenuOpen && (
           <div className="md:hidden border-t border-gray-200 py-4">
             <nav className="flex flex-col space-y-2">
-              {navigation.map((item) => (
+              {visibleNavigation.map((item) => (
                 <Link
                   key={item.name}
                   to={item.href}
@@ -88,6 +111,25 @@ export default function Header() {
                   {item.name}
                 </Link>
               ))}
+              
+              {!isAuthenticated && (
+                <div className="pt-4 border-t border-gray-200 space-y-2">
+                  <Link
+                    to="/login"
+                    className="block px-3 py-2 text-sm font-medium text-gray-700 hover:text-blue-600 hover:bg-gray-50 rounded-md"
+                    onClick={() => setIsMobileMenuOpen(false)}
+                  >
+                    Sign In
+                  </Link>
+                  <Link
+                    to="/register"
+                    className="block px-3 py-2 text-sm font-medium bg-blue-600 text-white hover:bg-blue-700 rounded-md text-center"
+                    onClick={() => setIsMobileMenuOpen(false)}
+                  >
+                    Get Started
+                  </Link>
+                </div>
+              )}
             </nav>
           </div>
         )}
