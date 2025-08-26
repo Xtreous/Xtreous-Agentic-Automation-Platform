@@ -33,7 +33,7 @@ export default function Header() {
           {/* Logo */}
           <Link to="/" className="flex items-center space-x-2">
             <Bot className="h-8 w-8 text-white" />
-            <span className="text-xl font-bold text-white">AgentFlow</span>
+            <span className="text-xl font-bold text-white">Xtreous</span>
           </Link>
 
           {/* Desktop Navigation */}
