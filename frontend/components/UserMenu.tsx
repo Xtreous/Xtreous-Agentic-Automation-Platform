@@ -11,7 +11,7 @@ import {
 } from '@/components/ui/dropdown-menu';
 import { Avatar, AvatarFallback } from '@/components/ui/avatar';
 import { Badge } from '@/components/ui/badge';
-import { User, Settings, CreditCard, LogOut, Shield } from 'lucide-react';
+import { User, Settings, CreditCard, LogOut, Shield, LayoutDashboard } from 'lucide-react';
 import { useAuth } from './AuthProvider';
 
 export default function UserMenu() {
@@ -81,6 +81,12 @@ export default function UserMenu() {
           </div>
         </DropdownMenuLabel>
         <DropdownMenuSeparator />
+        <DropdownMenuItem asChild>
+          <Link to="/dashboard" className="flex items-center">
+            <LayoutDashboard className="mr-2 h-4 w-4" />
+            <span>Dashboard</span>
+          </Link>
+        </DropdownMenuItem>
         <DropdownMenuItem asChild>
           <Link to="/profile" className="flex items-center">
             <User className="mr-2 h-4 w-4" />

@@ -82,7 +82,7 @@ export default function MarketplaceComparePage() {
 
   if (agentIds.length < 2) {
     return (
-      <div className="min-h-screen bg-gray-50 py-8">
+      <div className="min-h-screen bg-gray-50 pt-24 pb-8">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="text-center py-12">
             <h1 className="text-2xl font-bold text-gray-900 mb-4">Invalid Comparison</h1>
@@ -98,7 +98,7 @@ export default function MarketplaceComparePage() {
 
   if (isLoading) {
     return (
-      <div className="min-h-screen bg-gray-50 py-8">
+      <div className="min-h-screen bg-gray-50 pt-24 pb-8">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="animate-pulse space-y-8">
             <div className="h-8 bg-gray-200 rounded w-1/4"></div>
@@ -111,7 +111,7 @@ export default function MarketplaceComparePage() {
 
   if (!comparison) {
     return (
-      <div className="min-h-screen bg-gray-50 py-8">
+      <div className="min-h-screen bg-gray-50 pt-24 pb-8">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="text-center py-12">
             <h1 className="text-2xl font-bold text-gray-900 mb-4">Comparison not found</h1>
@@ -125,7 +125,7 @@ export default function MarketplaceComparePage() {
   }
 
   return (
-    <div className="min-h-screen bg-gray-50 py-8">
+    <div className="min-h-screen bg-gray-50 pt-24 pb-8">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         {/* Header */}
         <div className="mb-8">

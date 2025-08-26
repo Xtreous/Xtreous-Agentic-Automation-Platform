@@ -9,25 +9,15 @@ import UserMenu from './UserMenu';
 export default function Header() {
   const location = useLocation();
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
-  const { isAuthenticated } = useAuth();
+  const { isAuthenticated, logout } = useAuth();
 
   const navigation = [
-    { name: 'Home', href: '/' },
-    { name: 'Dashboard', href: '/dashboard', protected: true },
-    { name: 'Agents', href: '/agents', protected: true },
-    { name: 'Tasks', href: '/tasks', protected: true },
-    { name: 'Collaborations', href: '/collaborations', protected: true },
-    { name: 'Workflows', href: '/workflows', protected: true },
-    { name: 'Training', href: '/training', protected: true },
-    { name: 'Integrations', href: '/integrations', protected: true },
-    { name: 'Marketplace', href: '/marketplace' },
-    { name: 'Deployments', href: '/deployments', protected: true },
+    { name: 'Platform', href: '/platform' },
+    { name: 'AI Agents', href: '/agents' },
     { name: 'Solutions', href: '/solutions' },
+    { name: 'Resources', href: '/resources' },
+    { name: 'About', href: '/about' },
   ];
-
-  const visibleNavigation = navigation.filter(item => 
-    !item.protected || isAuthenticated
-  );
 
   const isActive = (href: string) => {
     if (href === '/') {
@@ -37,25 +27,25 @@ export default function Header() {
   };
 
   return (
-    <header className="bg-white shadow-sm border-b">
+    <header className="fixed top-0 left-0 right-0 z-50 bg-black/30 backdrop-blur-lg border-b border-white/20">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div className="flex justify-between items-center h-16">
           {/* Logo */}
           <Link to="/" className="flex items-center space-x-2">
-            <Bot className="h-8 w-8 text-blue-600" />
-            <span className="text-xl font-bold text-gray-900">AgentFlow</span>
+            <Bot className="h-8 w-8 text-white" />
+            <span className="text-xl font-bold text-white">AgentFlow</span>
           </Link>
 
           {/* Desktop Navigation */}
           <nav className="hidden md:flex space-x-8">
-            {visibleNavigation.map((item) => (
+            {navigation.map((item) => (
               <Link
                 key={item.name}
                 to={item.href}
                 className={`text-sm font-medium transition-colors ${
                   isActive(item.href)
-                    ? 'text-blue-600 border-b-2 border-blue-600 pb-4'
-                    : 'text-gray-700 hover:text-blue-600'
+                    ? 'text-white'
+                    : 'text-gray-300 hover:text-white'
                 }`}
               >
                 {item.name}
@@ -68,23 +58,19 @@ export default function Header() {
             {isAuthenticated ? (
               <UserMenu />
             ) : (
-              <>
-                <Button variant="ghost" asChild>
-                  <Link to="/login">Sign In</Link>
-                </Button>
-                <Button asChild>
-                  <Link to="/register">Get Started</Link>
-                </Button>
-              </>
+              <Button asChild variant="outline" className="border-white text-white hover:bg-white hover:text-black">
+                <Link to="/login">Sign In</Link>
+              </Button>
             )}
           </div>
 
           {/* Mobile menu button */}
-          <div className="md:hidden">
+          <div className="md:hidden flex items-center">
             <Button
               variant="ghost"
-              size="sm"
+              size="icon"
               onClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)}
+              className="text-white hover:bg-white/10"
             >
               {isMobileMenuOpen ? (
                 <X className="h-6 w-6" />
@@ -97,41 +83,34 @@ export default function Header() {
 
         {/* Mobile Navigation */}
         {isMobileMenuOpen && (
-          <div className="md:hidden border-t border-gray-200 py-4">
+          <div className="md:hidden border-t border-white/20 py-4">
             <nav className="flex flex-col space-y-2">
-              {visibleNavigation.map((item) => (
+              {navigation.map((item) => (
                 <Link
                   key={item.name}
                   to={item.href}
-                  className={`px-3 py-2 text-sm font-medium rounded-md transition-colors ${
+                  className={`px-3 py-2 text-base font-medium rounded-md transition-colors ${
                     isActive(item.href)
-                      ? 'text-blue-600 bg-blue-50'
-                      : 'text-gray-700 hover:text-blue-600 hover:bg-gray-50'
+                      ? 'text-white bg-white/10'
+                      : 'text-gray-300 hover:text-white hover:bg-white/10'
                   }`}
                   onClick={() => setIsMobileMenuOpen(false)}
                 >
                   {item.name}
                 </Link>
               ))}
-              
-              {!isAuthenticated && (
-                <div className="pt-4 border-t border-gray-200 space-y-2">
-                  <Link
-                    to="/login"
-                    className="block px-3 py-2 text-sm font-medium text-gray-700 hover:text-blue-600 hover:bg-gray-50 rounded-md"
-                    onClick={() => setIsMobileMenuOpen(false)}
-                  >
-                    Sign In
-                  </Link>
-                  <Link
-                    to="/register"
-                    className="block px-3 py-2 text-sm font-medium bg-blue-600 text-white hover:bg-blue-700 rounded-md text-center"
-                    onClick={() => setIsMobileMenuOpen(false)}
-                  >
-                    Get Started
-                  </Link>
-                </div>
-              )}
+              <div className="pt-4 mt-4 border-t border-white/20">
+                {isAuthenticated ? (
+                  <div className="flex items-center justify-between">
+                    <UserMenu />
+                    <Button onClick={logout} variant="destructive">Log Out</Button>
+                  </div>
+                ) : (
+                  <Button asChild className="w-full">
+                    <Link to="/login">Sign In</Link>
+                  </Button>
+                )}
+              </div>
             </nav>
           </div>
         )}

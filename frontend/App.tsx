@@ -23,6 +23,9 @@ import ProfilePage from './pages/ProfilePage';
 import SubscriptionPage from './pages/SubscriptionPage';
 import { DeploymentPage } from './pages/DeploymentPage';
 import ProtectedRoute from './components/ProtectedRoute';
+import PlatformPage from './pages/PlatformPage';
+import ResourcesPage from './pages/ResourcesPage';
+import AboutPage from './pages/AboutPage';
 
 const queryClient = new QueryClient({
   defaultOptions: {
@@ -47,6 +50,9 @@ function AppInner() {
             <Route path="/marketplace" element={<MarketplacePage />} />
             <Route path="/marketplace/:id" element={<MarketplaceAgentPage />} />
             <Route path="/marketplace/compare" element={<MarketplaceComparePage />} />
+            <Route path="/platform" element={<PlatformPage />} />
+            <Route path="/resources" element={<ResourcesPage />} />
+            <Route path="/about" element={<AboutPage />} />
             <Route path="/dashboard" element={
               <ProtectedRoute>
                 <DashboardPage />
