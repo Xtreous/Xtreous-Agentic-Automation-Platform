@@ -11,6 +11,8 @@ import type { Agent } from '~backend/core/types';
 import { useState } from 'react';
 import CreateAgentDialog from '../components/CreateAgentDialog';
 import AgentSkillsCard from '../components/AgentSkillsCard';
+import AgentDetailsDialog from '../components/AgentDetailsDialog';
+import AgentWorkloadDialog from '../components/AgentWorkloadDialog';
 
 export default function AgentsPage() {
   const [searchTerm, setSearchTerm] = useState('');
@@ -22,6 +24,8 @@ export default function AgentsPage() {
   const [currentPage, setCurrentPage] = useState(1);
   const [isCreateDialogOpen, setIsCreateDialogOpen] = useState(false);
   const [selectedAgentId, setSelectedAgentId] = useState<number | null>(null);
+  const [isDetailsDialogOpen, setIsDetailsDialogOpen] = useState(false);
+  const [isWorkloadDialogOpen, setIsWorkloadDialogOpen] = useState(false);
 
   const pageSize = 12;
   const offset = (currentPage - 1) * pageSize;
@@ -70,6 +74,16 @@ export default function AgentsPage() {
       setSortOrder('desc');
     }
     setCurrentPage(1);
+  };
+
+  const openDetailsDialog = (agentId: number) => {
+    setSelectedAgentId(agentId);
+    setIsDetailsDialogOpen(true);
+  };
+
+  const openWorkloadDialog = (agentId: number) => {
+    setSelectedAgentId(agentId);
+    setIsWorkloadDialogOpen(true);
   };
 
   return (
@@ -284,11 +298,17 @@ export default function AgentsPage() {
                           </div>
                           
                           <div className="mt-4 pt-4 border-t flex gap-2">
-                            <Button variant="outline" className="flex-1">
+                            <Button variant="outline" className="flex-1" onClick={(e) => {
+                              e.stopPropagation();
+                              openWorkloadDialog(agent.id);
+                            }}>
                               <Activity className="h-4 w-4 mr-2" />
                               Workload
                             </Button>
-                            <Button variant="outline" className="flex-1">
+                            <Button variant="outline" className="flex-1" onClick={(e) => {
+                              e.stopPropagation();
+                              openDetailsDialog(agent.id);
+                            }}>
                               View Details
                             </Button>
                           </div>
@@ -411,6 +431,18 @@ export default function AgentsPage() {
           refetch();
           setIsCreateDialogOpen(false);
         }}
+      />
+
+      <AgentDetailsDialog
+        agentId={selectedAgentId}
+        open={isDetailsDialogOpen}
+        onOpenChange={setIsDetailsDialogOpen}
+      />
+
+      <AgentWorkloadDialog
+        agentId={selectedAgentId}
+        open={isWorkloadDialogOpen}
+        onOpenChange={setIsWorkloadDialogOpen}
       />
     </div>
   );
