@@ -252,6 +252,7 @@ import { getAgent as api_core_get_agent_getAgent } from "~backend/core/get_agent
 import { getAgentPerformance as api_core_get_agent_performance_getAgentPerformance } from "~backend/core/get_agent_performance";
 import { getAgentSkills as api_core_get_agent_skills_getAgentSkills } from "~backend/core/get_agent_skills";
 import { getAgentWorkload as api_core_get_agent_workload_getAgentWorkload } from "~backend/core/get_agent_workload";
+import { getCollaboration as api_core_get_collaboration_getCollaboration } from "~backend/core/get_collaboration";
 import { getSkillRecommendations as api_core_get_skill_recommendations_getSkillRecommendations } from "~backend/core/get_skill_recommendations";
 import { getTask as api_core_get_task_getTask } from "~backend/core/get_task";
 import { getTrainingSessions as api_core_get_training_sessions_getTrainingSessions } from "~backend/core/get_training_sessions";
@@ -262,9 +263,12 @@ import { listIntegrations as api_core_list_integrations_listIntegrations } from 
 import { listTasks as api_core_list_tasks_listTasks } from "~backend/core/list_tasks";
 import { listTrainingModules as api_core_list_training_modules_listTrainingModules } from "~backend/core/list_training_modules";
 import { listWorkflows as api_core_list_workflows_listWorkflows } from "~backend/core/list_workflows";
+import { requestTaskAssistance as api_core_request_task_assistance_requestTaskAssistance } from "~backend/core/request_task_assistance";
 import { sendCollaborationMessage as api_core_send_collaboration_message_sendCollaborationMessage } from "~backend/core/send_collaboration_message";
 import { startTrainingSession as api_core_start_training_session_startTrainingSession } from "~backend/core/start_training_session";
 import { updateAgent as api_core_update_agent_updateAgent } from "~backend/core/update_agent";
+import { updateCollaboration as api_core_update_collaboration_updateCollaboration } from "~backend/core/update_collaboration";
+import { updateCollaborationContext as api_core_update_collaboration_context_updateCollaborationContext } from "~backend/core/update_collaboration_context";
 import { updateTask as api_core_update_task_updateTask } from "~backend/core/update_task";
 import { updateWorkflow as api_core_update_workflow_updateWorkflow } from "~backend/core/update_workflow";
 
@@ -289,6 +293,7 @@ export namespace core {
             this.getAgentPerformance = this.getAgentPerformance.bind(this)
             this.getAgentSkills = this.getAgentSkills.bind(this)
             this.getAgentWorkload = this.getAgentWorkload.bind(this)
+            this.getCollaboration = this.getCollaboration.bind(this)
             this.getSkillRecommendations = this.getSkillRecommendations.bind(this)
             this.getTask = this.getTask.bind(this)
             this.getTrainingSessions = this.getTrainingSessions.bind(this)
@@ -299,9 +304,12 @@ export namespace core {
             this.listTasks = this.listTasks.bind(this)
             this.listTrainingModules = this.listTrainingModules.bind(this)
             this.listWorkflows = this.listWorkflows.bind(this)
+            this.requestTaskAssistance = this.requestTaskAssistance.bind(this)
             this.sendCollaborationMessage = this.sendCollaborationMessage.bind(this)
             this.startTrainingSession = this.startTrainingSession.bind(this)
             this.updateAgent = this.updateAgent.bind(this)
+            this.updateCollaboration = this.updateCollaboration.bind(this)
+            this.updateCollaborationContext = this.updateCollaborationContext.bind(this)
             this.updateTask = this.updateTask.bind(this)
             this.updateWorkflow = this.updateWorkflow.bind(this)
         }
@@ -451,6 +459,15 @@ export namespace core {
             // Now make the actual call to the API
             const resp = await this.baseClient.callTypedAPI(`/agents/${encodeURIComponent(params.agent_id)}/workload`, {method: "GET", body: undefined})
             return JSON.parse(await resp.text(), dateReviver) as ResponseType<typeof api_core_get_agent_workload_getAgentWorkload>
+        }
+
+        /**
+         * Retrieves a specific agent collaboration.
+         */
+        public async getCollaboration(params: { id: number }): Promise<ResponseType<typeof api_core_get_collaboration_getCollaboration>> {
+            // Now make the actual call to the API
+            const resp = await this.baseClient.callTypedAPI(`/collaborations/${encodeURIComponent(params.id)}`, {method: "GET", body: undefined})
+            return JSON.parse(await resp.text(), dateReviver) as ResponseType<typeof api_core_get_collaboration_getCollaboration>
         }
 
         /**
@@ -611,6 +628,21 @@ export namespace core {
         }
 
         /**
+         * Requests assistance on a task, potentially leading to an automatic handoff.
+         */
+        public async requestTaskAssistance(params: RequestType<typeof api_core_request_task_assistance_requestTaskAssistance>): Promise<ResponseType<typeof api_core_request_task_assistance_requestTaskAssistance>> {
+            // Construct the body with only the fields which we want encoded within the body (excluding query string or header fields)
+            const body: Record<string, any> = {
+                reason:            params.reason,
+                "required_skills": params["required_skills"],
+            }
+
+            // Now make the actual call to the API
+            const resp = await this.baseClient.callTypedAPI(`/tasks/${encodeURIComponent(params.task_id)}/request-assistance`, {method: "POST", body: JSON.stringify(body)})
+            return JSON.parse(await resp.text(), dateReviver) as ResponseType<typeof api_core_request_task_assistance_requestTaskAssistance>
+        }
+
+        /**
          * Sends a message in an agent collaboration.
          */
         public async sendCollaborationMessage(params: RequestType<typeof api_core_send_collaboration_message_sendCollaborationMessage>): Promise<ResponseType<typeof api_core_send_collaboration_message_sendCollaborationMessage>> {
@@ -652,6 +684,38 @@ export namespace core {
             // Now make the actual call to the API
             const resp = await this.baseClient.callTypedAPI(`/agents/${encodeURIComponent(params.id)}`, {method: "PUT", body: JSON.stringify(body)})
             return JSON.parse(await resp.text(), dateReviver) as ResponseType<typeof api_core_update_agent_updateAgent>
+        }
+
+        /**
+         * Updates an agent collaboration.
+         */
+        public async updateCollaboration(params: RequestType<typeof api_core_update_collaboration_updateCollaboration>): Promise<ResponseType<typeof api_core_update_collaboration_updateCollaboration>> {
+            // Construct the body with only the fields which we want encoded within the body (excluding query string or header fields)
+            const body: Record<string, any> = {
+                "coordinator_agent_id": params["coordinator_agent_id"],
+                description:            params.description,
+                name:                   params.name,
+                "participating_agents": params["participating_agents"],
+                status:                 params.status,
+            }
+
+            // Now make the actual call to the API
+            const resp = await this.baseClient.callTypedAPI(`/collaborations/${encodeURIComponent(params.id)}`, {method: "PUT", body: JSON.stringify(body)})
+            return JSON.parse(await resp.text(), dateReviver) as ResponseType<typeof api_core_update_collaboration_updateCollaboration>
+        }
+
+        /**
+         * Updates the shared context of a collaboration.
+         */
+        public async updateCollaborationContext(params: RequestType<typeof api_core_update_collaboration_context_updateCollaborationContext>): Promise<ResponseType<typeof api_core_update_collaboration_context_updateCollaborationContext>> {
+            // Construct the body with only the fields which we want encoded within the body (excluding query string or header fields)
+            const body: Record<string, any> = {
+                "shared_context": params["shared_context"],
+            }
+
+            // Now make the actual call to the API
+            const resp = await this.baseClient.callTypedAPI(`/collaborations/${encodeURIComponent(params.id)}/context`, {method: "PUT", body: JSON.stringify(body)})
+            return JSON.parse(await resp.text(), dateReviver) as ResponseType<typeof api_core_update_collaboration_context_updateCollaborationContext>
         }
 
         /**

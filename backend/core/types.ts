@@ -131,6 +131,8 @@ export interface AgentCollaboration {
   communication_log: CollaborationMessage[];
   created_at: Date;
   updated_at: Date;
+  user_id?: number;
+  organization_id?: number;
 }
 
 export interface CollaborationMessage {
