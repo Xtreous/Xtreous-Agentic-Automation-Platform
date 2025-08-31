@@ -1,5 +1,4 @@
 import React from 'react';
-import { Link } from 'react-router-dom';
 import { motion } from 'framer-motion';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
@@ -9,27 +8,22 @@ import {
   Zap, 
   Target, 
   Shield, 
-  TrendingUp, 
-  Users, 
-  Clock, 
-  CheckCircle,
-  ArrowRight,
-  Building,
-  Headphones,
-  DollarSign,
-  BarChart3,
   Star,
-  Play,
-  ChevronRight,
+  ArrowRight,
   Sparkles,
   Globe,
   Lock,
-  Cpu,
+  CheckCircle,
   Brain,
-  Workflow
+  Workflow,
+  Cpu,
+  Building,
+  Headphones,
+  DollarSign,
+  BarChart3
 } from 'lucide-react';
 
-export default function HomePage() {
+export default function DemoPage() {
   const features = [
     {
       icon: Brain,
@@ -153,31 +147,28 @@ export default function HomePage() {
           >
             <Badge className="mb-6 bg-gradient-to-r from-purple-600 to-pink-600 text-white border-0 px-4 py-2">
               <Sparkles className="w-4 h-4 mr-2" />
-              Next-Generation AI Platform
+              Template Demo
             </Badge>
             
             <h1 className="text-5xl md:text-7xl font-bold text-white mb-6 leading-tight">
-              Automate Everything with
+              AutoAI Template
               <span className="block bg-gradient-to-r from-purple-400 via-pink-400 to-blue-400 bg-clip-text text-transparent">
-                Intelligent AI
+                Showcase
               </span>
             </h1>
             
             <p className="text-xl md:text-2xl text-gray-300 mb-8 max-w-4xl mx-auto leading-relaxed">
-              Transform your business operations with AI agents that learn, adapt, and scale. 
-              From customer service to complex workflows, automate it all with unprecedented accuracy.
+              A beautiful, modern landing page template built with React, TypeScript, Tailwind CSS, and Framer Motion.
+              Perfect for AI and automation companies.
             </p>
             
             <div className="flex flex-col sm:flex-row gap-4 justify-center items-center mb-12">
-              <Button size="lg" className="bg-gradient-to-r from-purple-600 to-pink-600 hover:from-purple-700 hover:to-pink-700 text-white px-8 py-4 text-lg font-semibold" asChild>
-                <Link to="/register">
-                  Start Free Trial
-                  <ArrowRight className="ml-2 h-5 w-5" />
-                </Link>
+              <Button size="lg" className="bg-gradient-to-r from-purple-600 to-pink-600 hover:from-purple-700 hover:to-pink-700 text-white px-8 py-4 text-lg font-semibold">
+                Get Started
+                <ArrowRight className="ml-2 h-5 w-5" />
               </Button>
               <Button size="lg" variant="outline" className="border-white/20 text-white hover:bg-white/10 px-8 py-4 text-lg font-semibold">
-                <Play className="mr-2 h-5 w-5" />
-                Watch Demo
+                View Source
               </Button>
             </div>
 
@@ -198,15 +189,6 @@ export default function HomePage() {
             </div>
           </motion.div>
         </div>
-
-        {/* Scroll indicator */}
-        <motion.div
-          className="absolute bottom-8 left-1/2 transform -translate-x-1/2"
-          animate={{ y: [0, 10, 0] }}
-          transition={{ duration: 2, repeat: Infinity }}
-        >
-          <ChevronRight className="w-6 h-6 text-white/60 rotate-90" />
-        </motion.div>
       </section>
 
       {/* Stats Section */}
@@ -243,13 +225,10 @@ export default function HomePage() {
             viewport={{ once: true }}
           >
             <h2 className="text-4xl md:text-5xl font-bold text-white mb-6">
-              Powerful Features for
-              <span className="block bg-gradient-to-r from-purple-400 to-pink-400 bg-clip-text text-transparent">
-                Modern Businesses
-              </span>
+              Template Features
             </h2>
             <p className="text-xl text-gray-400 max-w-3xl mx-auto">
-              Everything you need to build, deploy, and scale intelligent automation across your organization.
+              Everything you need to build a modern, professional landing page.
             </p>
           </motion.div>
           
@@ -295,7 +274,7 @@ export default function HomePage() {
               Industry Solutions
             </h2>
             <p className="text-xl text-gray-400 max-w-3xl mx-auto">
-              Tailored AI solutions designed for your industry's unique challenges and requirements.
+              Tailored solutions designed for your industry's unique challenges.
             </p>
           </motion.div>
           
@@ -340,10 +319,10 @@ export default function HomePage() {
             viewport={{ once: true }}
           >
             <h2 className="text-4xl md:text-5xl font-bold text-white mb-6">
-              Trusted by Industry Leaders
+              Customer Testimonials
             </h2>
             <p className="text-xl text-gray-400 max-w-3xl mx-auto">
-              See how leading companies are transforming their operations with AutoAI.
+              See what our customers say about the template.
             </p>
           </motion.div>
           
@@ -390,20 +369,18 @@ export default function HomePage() {
             viewport={{ once: true }}
           >
             <h2 className="text-4xl md:text-5xl font-bold text-white mb-6">
-              Ready to Transform Your Business?
+              Ready to Use This Template?
             </h2>
             <p className="text-xl text-white/90 mb-8 max-w-2xl mx-auto">
-              Join thousands of businesses already using AutoAI to automate their workflows and boost productivity.
+              Start building your modern landing page with this beautiful template.
             </p>
             <div className="flex flex-col sm:flex-row gap-4 justify-center">
-              <Button size="lg" className="bg-white text-purple-600 hover:bg-gray-100 px-8 py-4 text-lg font-semibold" asChild>
-                <Link to="/register">
-                  Start Free Trial
-                  <ArrowRight className="ml-2 h-5 w-5" />
-                </Link>
+              <Button size="lg" className="bg-white text-purple-600 hover:bg-gray-100 px-8 py-4 text-lg font-semibold">
+                Download Template
+                <ArrowRight className="ml-2 h-5 w-5" />
               </Button>
               <Button size="lg" variant="outline" className="border-white/30 text-white hover:bg-white/10 px-8 py-4 text-lg font-semibold">
-                Schedule Demo
+                View Documentation
               </Button>
             </div>
           </motion.div>
