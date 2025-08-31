@@ -30,6 +30,7 @@ import AboutPage from './pages/AboutPage';
 import TemplatesPage from './pages/TemplatesPage';
 import MonitoringPage from './pages/MonitoringPage';
 import UnauthorizedPage from './pages/UnauthorizedPage';
+import DemoPage from './pages/DemoPage';
 import { AnimatedBackground } from './components/AnimatedBackground';
 import { PageTransition } from './components/PageTransition';
 
@@ -61,6 +62,7 @@ function AppInner() {
               <Route path="/platform" element={<PlatformPage />} />
               <Route path="/resources" element={<ResourcesPage />} />
               <Route path="/about" element={<AboutPage />} />
+              <Route path="/demo" element={<DemoPage />} />
               <Route path="/dashboard" element={
                 <ProtectedRoute>
                   <DashboardPage />
