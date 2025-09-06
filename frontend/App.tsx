@@ -30,7 +30,7 @@ import AboutPage from './pages/AboutPage';
 import TemplatesPage from './pages/TemplatesPage';
 import MonitoringPage from './pages/MonitoringPage';
 import UnauthorizedPage from './pages/UnauthorizedPage';
-import { AnimatedBackground } from './components/AnimatedBackground';
+import { ModernBackground } from './components/ModernBackground';
 import { PageTransition } from './components/PageTransition';
 
 const queryClient = new QueryClient({
@@ -45,8 +45,8 @@ const queryClient = new QueryClient({
 function AppInner() {
   return (
     <Router>
-      <div className="min-h-screen bg-gradient-to-br from-slate-900 via-purple-900 to-slate-900 flex flex-col relative overflow-hidden">
-        <AnimatedBackground />
+      <div className="min-h-screen flex flex-col relative overflow-hidden">
+        <ModernBackground />
         <Header />
         <main className="flex-1 relative z-10">
           <PageTransition>
