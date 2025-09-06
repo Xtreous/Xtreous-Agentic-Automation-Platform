@@ -6,6 +6,7 @@ import { useState } from 'react';
 import { useAuth } from './AuthProvider';
 import UserMenu from './UserMenu';
 import { GlassCard } from './GlassCard';
+import { cn } from '@/lib/utils';
 
 export default function Header() {
   const location = useLocation();
